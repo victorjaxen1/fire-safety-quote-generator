@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Equipment, QuoteItem, Quote, ClientInfo, Formulas } from '../types';
+import { useState } from 'react';
+import { Equipment, QuoteItem, ClientInfo, Formulas } from '../types';
 import equipmentData from '../data/equipment.json';
 import formulasData from '../data/formulas.json';
-import { format } from 'date-fns';
 import { exportToPDF, exportToExcel, exportToCSV, generateQuoteNumber } from '../utils/exportUtils';
 
 const QuoteBuilder: React.FC = () => {

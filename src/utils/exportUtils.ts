@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
-import { Quote, QuoteItem, ClientInfo } from '../types';
+import { QuoteItem, ClientInfo } from '../types';
 import { format } from 'date-fns';
 
 export const generateQuoteNumber = (): string => {
