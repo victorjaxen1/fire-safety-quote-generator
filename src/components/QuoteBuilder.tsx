@@ -8,6 +8,7 @@ import BundleSelector from './BundleSelector';
 import BundlePreviewModal from './BundlePreviewModal';
 import StepIndicator from './StepIndicator';
 import CollapsibleSection from './CollapsibleSection';
+import EmptyState from './EmptyState';
 
 const QuoteBuilder: React.FC = () => {
   const [equipment] = useState<Equipment[]>(equipmentData as Equipment[]);
@@ -26,6 +27,8 @@ const QuoteBuilder: React.FC = () => {
   const [previewBundle, setPreviewBundle] = useState<EquipmentBundle | null>(null);
   const [quoteNumber, setQuoteNumber] = useState<string>('');
   const [currentStep, setCurrentStep] = useState<number>(1);
+  const [isExporting, setIsExporting] = useState<boolean>(false);
+  const [exportingType, setExportingType] = useState<string>('');
   const [companySettings, setCompanySettings] = useState<CompanySettings>({} as CompanySettings);
   const [clientInfo, setClientInfo] = useState<ClientInfo>({
     name: '',
@@ -306,6 +309,200 @@ const QuoteBuilder: React.FC = () => {
     return `Quote ${quoteNumber} - $${total.toFixed(2)} AUD`;
   };
 
+  // Contextual Actions System
+  const getContextualActions = () => {
+    switch (currentStep) {
+      case 1: // Client Info Step
+        return [
+          {
+            label: isClientComplete() ? 'Continue to Equipment' : 'Complete Client Info',
+            onClick: () => isClientComplete() ? setCurrentStep(2) : null,
+            variant: 'primary' as const,
+            disabled: !isClientComplete(),
+            icon: 'arrow-right'
+          },
+          {
+            label: 'Save Draft',
+            onClick: () => {}, // Already auto-saves
+            variant: 'secondary' as const,
+            disabled: false,
+            icon: 'save'
+          }
+        ];
+
+      case 2: // Equipment Step
+        return [
+          {
+            label: selectedItems.length > 0 ? 'Review Quote' : 'Select Equipment First',
+            onClick: () => selectedItems.length > 0 ? setCurrentStep(3) : null,
+            variant: 'primary' as const,
+            disabled: selectedItems.length === 0,
+            icon: 'document'
+          },
+          {
+            label: 'Back to Client',
+            onClick: () => setCurrentStep(1),
+            variant: 'secondary' as const,
+            disabled: false,
+            icon: 'arrow-left'
+          }
+        ];
+
+      case 3: // Review Step
+        return [
+          {
+            label: isExporting && exportingType === 'PDF' ? 'Exporting PDF...' : 'Export PDF',
+            onClick: async () => {
+              if (isExporting) return;
+              setIsExporting(true);
+              setExportingType('PDF');
+              saveClient(clientInfo);
+              await new Promise(resolve => setTimeout(resolve, 500)); // Simulate processing
+              handleExportPDF();
+              clearDraft();
+              setCurrentStep(4);
+              setTimeout(() => {
+                setIsExporting(false);
+                setExportingType('');
+              }, 1000);
+            },
+            variant: 'primary' as const,
+            disabled: !isReviewComplete() || isExporting,
+            icon: isExporting && exportingType === 'PDF' ? 'loading' : 'download'
+          },
+          {
+            label: isExporting && exportingType === 'Excel' ? 'Exporting Excel...' : 'Export Excel',
+            onClick: async () => {
+              if (isExporting) return;
+              setIsExporting(true);
+              setExportingType('Excel');
+              saveClient(clientInfo);
+              await new Promise(resolve => setTimeout(resolve, 500)); // Simulate processing
+              handleExportExcel();
+              clearDraft();
+              setTimeout(() => {
+                setIsExporting(false);
+                setExportingType('');
+              }, 1000);
+            },
+            variant: 'secondary' as const,
+            disabled: !isReviewComplete() || isExporting,
+            icon: isExporting && exportingType === 'Excel' ? 'loading' : 'document'
+          },
+          {
+            label: 'Add More Items',
+            onClick: () => setCurrentStep(2),
+            variant: 'tertiary' as const,
+            disabled: false,
+            icon: 'plus'
+          }
+        ];
+
+      case 4: // Export Complete
+        return [
+          {
+            label: 'Start New Quote',
+            onClick: () => {
+              startNewQuote();
+              setCurrentStep(1);
+            },
+            variant: 'primary' as const,
+            disabled: false,
+            icon: 'plus'
+          },
+          {
+            label: 'Export Again',
+            onClick: () => setCurrentStep(3),
+            variant: 'secondary' as const,
+            disabled: false,
+            icon: 'refresh'
+          }
+        ];
+
+      default:
+        return [];
+    }
+  };
+
+  const getActionButtonClasses = (variant: 'primary' | 'secondary' | 'tertiary', disabled: boolean) => {
+    const baseClasses = "flex items-center space-x-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200";
+
+    if (disabled) {
+      return `${baseClasses} bg-gray-100 text-gray-400 cursor-not-allowed`;
+    }
+
+    switch (variant) {
+      case 'primary':
+        return `${baseClasses} bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md`;
+      case 'secondary':
+        return `${baseClasses} bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300`;
+      case 'tertiary':
+        return `${baseClasses} text-blue-600 hover:text-blue-700 hover:bg-blue-50`;
+      default:
+        return baseClasses;
+    }
+  };
+
+  const getActionIcon = (iconType: string) => {
+    const iconClasses = "w-4 h-4";
+
+    switch (iconType) {
+      case 'arrow-right':
+        return (
+          <svg className={iconClasses} fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
+        );
+      case 'arrow-left':
+        return (
+          <svg className={iconClasses} fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+          </svg>
+        );
+      case 'download':
+        return (
+          <svg className={iconClasses} fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
+        );
+      case 'document':
+        return (
+          <svg className={iconClasses} fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
+          </svg>
+        );
+      case 'save':
+        return (
+          <svg className={iconClasses} fill="currentColor" viewBox="0 0 20 20">
+            <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
+          </svg>
+        );
+      case 'plus':
+        return (
+          <svg className={iconClasses} fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+          </svg>
+        );
+      case 'refresh':
+        return (
+          <svg className={iconClasses} fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+          </svg>
+        );
+      case 'loading':
+        return (
+          <div className={`${iconClasses} animate-spin`}>
+            <svg fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+            </svg>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   const filteredEquipment = equipment
     .filter(item => {
       const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -429,11 +626,51 @@ const QuoteBuilder: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Step Progress Indicator */}
-      <StepIndicator
-        currentStep={currentStep}
-        onStepClick={handleStepClick}
-        getStepStatus={getStepStatus}
-      />
+      <div className="sticky top-0 z-10 bg-white shadow-sm">
+        <StepIndicator
+          currentStep={currentStep}
+          onStepClick={handleStepClick}
+          getStepStatus={getStepStatus}
+        />
+      </div>
+
+      {/* Contextual Actions Bar */}
+      <div className="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+              <span className="text-blue-600 font-semibold text-sm">{currentStep}</span>
+            </div>
+            <div>
+              <h3 className="font-medium text-gray-900">
+                {currentStep === 1 && 'Complete Client Information'}
+                {currentStep === 2 && 'Select Equipment & Bundles'}
+                {currentStep === 3 && 'Review & Export Quote'}
+                {currentStep === 4 && 'Quote Complete!'}
+              </h3>
+              <p className="text-sm text-gray-600">
+                {currentStep === 1 && 'Fill in your client details to continue'}
+                {currentStep === 2 && 'Add equipment items or choose pre-configured bundles'}
+                {currentStep === 3 && 'Review your quote and export to PDF or Excel'}
+                {currentStep === 4 && 'Your quote has been exported successfully'}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-3">
+            {getContextualActions().map((action, index) => (
+              <button
+                key={index}
+                onClick={action.onClick}
+                disabled={action.disabled}
+                className={getActionButtonClasses(action.variant, action.disabled)}
+              >
+                {getActionIcon(action.icon)}
+                <span>{action.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* Draft Restore Banner */}
       {showDraftRestore && (
@@ -720,19 +957,22 @@ const QuoteBuilder: React.FC = () => {
           </div>
 
           {filteredEquipment.length === 0 && (searchTerm || selectedCategory !== 'all' || showFavoritesOnly) && (
-            <div className="text-center py-8 text-gray-500">
-              <p>No equipment found matching your criteria.</p>
-              <button
-                onClick={() => {
-                  setSearchTerm('');
-                  setSelectedCategory('all');
-                  setShowFavoritesOnly(false);
-                }}
-                className="text-primary-600 hover:text-primary-700 mt-2"
-              >
-                Clear filters
-              </button>
-            </div>
+            <EmptyState
+              icon="exclamation"
+              title="No Equipment Found"
+              description="No equipment matches your current filters. Try adjusting your search or clearing filters."
+              actions={[
+                {
+                  label: "Clear All Filters",
+                  onClick: () => {
+                    setSearchTerm('');
+                    setSelectedCategory('all');
+                    setShowFavoritesOnly(false);
+                  },
+                  variant: 'primary'
+                }
+              ]}
+            />
           )}
 
           <div className="space-y-2 max-h-96 overflow-y-auto">
@@ -804,8 +1044,22 @@ const QuoteBuilder: React.FC = () => {
         </div>
 
           <div className="space-y-3 mb-4">
-            {selectedItems.map((item, index) => (
-              <div key={item.equipment.id} className="flex items-center justify-between p-2 border border-gray-200 rounded">
+            {selectedItems.length === 0 ? (
+              <EmptyState
+                icon="clipboard"
+                title="No Equipment Selected"
+                description="Add equipment items or bundles to start building your quote. You can go back to the equipment selection step."
+                actions={[
+                  {
+                    label: "Select Equipment",
+                    onClick: () => setCurrentStep(2),
+                    variant: 'primary'
+                  }
+                ]}
+              />
+            ) : (
+              selectedItems.map((item, index) => (
+                <div key={item.equipment.id} className="flex items-center justify-between p-2 border border-gray-200 rounded">
                 <div className="flex-1">
                   <h4 className="font-medium text-sm">{item.equipment.name}</h4>
                   <p className="text-xs text-gray-500">${item.unitPrice.toFixed(2)} per {item.equipment.unit}</p>
@@ -829,7 +1083,8 @@ const QuoteBuilder: React.FC = () => {
                   </button>
                 </div>
               </div>
-            ))}
+              ))
+            )}
           </div>
 
           {selectedItems.length > 0 && (
@@ -847,38 +1102,7 @@ const QuoteBuilder: React.FC = () => {
                 <span className="text-3xl font-bold text-green-700">${total.toFixed(2)}</span>
               </div>
 
-              <div className="flex space-x-2 mt-4">
-                <button
-                  onClick={() => {
-                    saveClient(clientInfo); // Save client before export
-                    handleExportPDF();
-                    clearDraft(); // Clear draft after successful export
-                  }}
-                  className="flex-1 bg-primary-600 text-white py-2 px-4 rounded-md hover:bg-primary-700 text-sm"
-                >
-                  Export PDF
-                </button>
-                <button
-                  onClick={() => {
-                    saveClient(clientInfo); // Save client before export
-                    handleExportExcel();
-                    clearDraft(); // Clear draft after successful export
-                  }}
-                  className="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 text-sm"
-                >
-                  Export Excel
-                </button>
-                <button
-                  onClick={() => {
-                    saveClient(clientInfo); // Save client before export
-                    handleExportCSV();
-                    clearDraft(); // Clear draft after successful export
-                  }}
-                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 text-sm"
-                >
-                  Export CSV
-                </button>
-              </div>
+              {/* Export actions now handled by contextual actions bar */}
             </div>
           )}
         </div>
