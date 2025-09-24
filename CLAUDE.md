@@ -163,10 +163,102 @@ interface Equipment {
 
 ## Directory Structure Notes
 
-- **Root directory**: Contains legacy JSON files (equipment.json, formulas.json, categories.json) - these are NOT used by the app
-- **Active data**: All application data is in `fire-quote-app/src/data/` directory
-- **Development**: Always work in the `fire-quote-app/` subdirectory
-- **Deployment**: Netlify builds from `fire-quote-app/` using `netlify.toml` config
+- **Root directory**: Contains the main app files for Netlify deployment
+- **Legacy files**: Old JSON files in root (equipment.json, formulas.json, categories.json) are kept for reference
+- **Active data**: All application data is in `src/data/` directory
+- **Development**: Work directly in the root directory
+- **Deployment**: Netlify builds from root using `netlify.toml` config
+
+## Deployment Best Practices
+
+### **Netlify Configuration**
+- App files MUST be in root directory for Netlify auto-deployment
+- `netlify.toml` must be in root with correct build settings
+- Build command: `npm run build` (Vite only, not `tsc && vite build`)
+- Publish directory: `dist`
+- Node version: 18+ (specified in netlify.toml)
+
+### **TypeScript & Testing Setup**
+- **Production Build**: Exclude test files to avoid compilation errors
+- **Test Files**: Use `.test.tsx` or `.spec.tsx` extensions
+- **Vitest Globals**: Always import `vi`, `beforeEach` etc. from 'vitest'
+- **Build Process**: Use Vite-only build for simplicity
+- **Config Files**:
+  - `tsconfig.json` - excludes test files from compilation
+  - `vite.config.ts` - excludes test files from bundle with rollupOptions
+
+### **Common Deployment Issues & Solutions**
+
+**Issue**: Netlify build fails with "All files already uploaded"
+**Solution**: Files are in subdirectory - move app to root directory
+
+**Issue**: TypeScript errors on test files during build
+**Solution**: Exclude test files in tsconfig.json and vite.config.ts
+
+**Issue**: "vi is not defined" in test setup
+**Solution**: Import `vi`, `beforeEach` from 'vitest' explicitly
+
+**Issue**: Build command fails with `tsc && vite build`
+**Solution**: Use `vite build` only - Vite has TypeScript support built-in
+
+## Recent Major Updates (Session Summary)
+
+### **UX Improvements Implemented**
+1. **Category Filtering System**
+   - 6 meaningful equipment categories (Control Panels, Detection Devices, etc.)
+   - Automatic categorization of 78+ equipment items
+   - Combined category + text search functionality
+   - Live item count display per category
+
+2. **Equipment Favorites System**
+   - Star/unstar equipment with localStorage persistence
+   - "Show favorites only" filtering toggle
+   - Favorites sorted to top of equipment list
+   - Visual highlighting for favorite items
+
+3. **Auto-save Draft Functionality**
+   - Automatic saving every 2 seconds after changes
+   - Visual save status indicators ("Saving..." / "Saved")
+   - Draft restoration banner on page reload
+   - 24-hour draft expiry with age validation
+   - Clear draft on successful export
+
+4. **Client Information Persistence**
+   - Save and recall client information with usage tracking
+   - Live search suggestions while typing
+   - "Recent Clients" management system
+   - Auto-fill forms from saved client data
+   - Maximum 100 clients with LRU eviction
+
+### **Technical Infrastructure Added**
+- **Comprehensive Testing**: 60+ tests with Vitest & React Testing Library
+- **Mock Strategy**: Complete localStorage, file download, and timer mocking
+- **Error Handling**: Graceful degradation for storage failures
+- **Performance**: Debounced operations, efficient filtering algorithms
+- **Code Organization**: Feature-based test separation with shared utilities
+
+### **Development Lessons Learned**
+
+**Project Structure**:
+- Keep app files in root for Netlify deployment
+- Use consistent naming for test files
+- Separate test utilities from production code
+
+**Build Configuration**:
+- Exclude test files from production builds
+- Use Vite-only builds for simplicity
+- Configure proper TypeScript paths
+
+**Testing Best Practices**:
+- Import Vitest globals explicitly
+- Mock all external dependencies (localStorage, DOM APIs)
+- Use feature-based test file organization
+- Test error scenarios and edge cases
+
+**Git & Deployment**:
+- Always test build process before pushing
+- Use meaningful commit messages with feature summaries
+- Verify Netlify configuration matches directory structure
 
 ## Future Enhancements
 
@@ -177,3 +269,10 @@ The codebase is structured to support:
 - Customer database integration
 - Multi-user collaboration
 - Advanced reporting features
+
+## Quick Troubleshooting
+
+**Build Fails**: Check if test files are excluded in both tsconfig.json and vite.config.ts
+**Features Not Deployed**: Verify app files are in root directory, not subdirectory
+**localStorage Errors**: Check mock setup in test configuration
+**TypeScript Errors**: Ensure all imports are properly typed and used
