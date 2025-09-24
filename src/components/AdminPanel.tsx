@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Equipment, Formulas, EquipmentBundle } from '../types';
+import { Equipment, Formulas, EquipmentBundle, CompanySettings } from '../types';
 import equipmentData from '../data/equipment.json';
 import formulasData from '../data/formulas.json';
 import bundlesData from '../data/bundles.json';
+import CompanySettingsForm from './CompanySettingsForm';
 
 const AdminPanel: React.FC = () => {
   const [equipment, setEquipment] = useState<Equipment[]>(equipmentData as Equipment[]);
   const [formulas, setFormulas] = useState<Formulas>(formulasData as Formulas);
   const [bundles, setBundles] = useState<EquipmentBundle[]>([]);
+  const [companySettings, setCompanySettings] = useState<CompanySettings>({} as CompanySettings);
+  const [activeTab, setActiveTab] = useState<'pricing' | 'equipment' | 'bundles' | 'company'>('pricing');
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -34,7 +37,34 @@ const AdminPanel: React.FC = () => {
     };
 
     loadBundles();
+    loadCompanySettings();
   }, []);
+
+  // Load company settings
+  const loadCompanySettings = () => {
+    try {
+      const savedSettings = localStorage.getItem('company-settings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        setCompanySettings(settings);
+      }
+    } catch (error) {
+      console.error('Error loading company settings:', error);
+    }
+  };
+
+  const saveCompanySettings = (settings: CompanySettings) => {
+    try {
+      localStorage.setItem('company-settings', JSON.stringify(settings));
+      setCompanySettings(settings);
+
+      // Show success notification (you could add a toast system here)
+      alert('Company settings saved successfully!');
+    } catch (error) {
+      console.error('Error saving company settings:', error);
+      alert('Failed to save company settings. Please try again.');
+    }
+  };
 
   const filteredEquipment = equipment.filter(item =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -67,11 +97,53 @@ const AdminPanel: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
+  const tabs = [
+    { id: 'company', name: 'Company Settings', icon: '🏢' },
+    { id: 'pricing', name: 'Pricing Settings', icon: '💰' },
+    { id: 'equipment', name: 'Equipment Management', icon: '🔧' },
+    { id: 'bundles', name: 'Bundle Management', icon: '📦' }
+  ];
+
   return (
     <div className="space-y-6">
-      {/* Settings */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-lg font-semibold mb-4">Pricing Settings</h2>
+      {/* Tab Navigation */}
+      <div className="bg-white rounded-lg shadow">
+        <div className="border-b border-gray-200">
+          <nav className="-mb-px flex">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`flex items-center gap-2 px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === tab.id
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <span className="text-lg">{tab.icon}</span>
+                {tab.name}
+                {tab.id === 'company' && !companySettings.isConfigured && (
+                  <span className="ml-2 bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
+                    Setup Required
+                  </span>
+                )}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        {/* Tab Content */}
+        <div className="p-6">
+          {activeTab === 'company' && (
+            <CompanySettingsForm
+              settings={companySettings}
+              onSave={saveCompanySettings}
+            />
+          )}
+
+          {activeTab === 'pricing' && (
+            <div>
+              <h2 className="text-lg font-semibold mb-4">Pricing Settings</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -120,13 +192,14 @@ const AdminPanel: React.FC = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
-        </div>
-      </div>
+              </div>
+            </div>
+          )}
 
-      {/* Equipment Management */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Equipment Management</h2>
+          {activeTab === 'equipment' && (
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Equipment Management</h2>
           <button
             onClick={exportData}
             className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 text-sm"
@@ -180,13 +253,14 @@ const AdminPanel: React.FC = () => {
               </div>
             </div>
           ))}
-        </div>
-      </div>
+              </div>
+            </div>
+          )}
 
-      {/* Bundle Management */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Bundle Management</h2>
+          {activeTab === 'bundles' && (
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Bundle Management</h2>
           <span className="text-sm text-gray-500">
             {bundles.length} bundles available
           </span>
@@ -263,6 +337,9 @@ const AdminPanel: React.FC = () => {
                 </div>
               );
             })
+          )}
+              </div>
+            </div>
           )}
         </div>
       </div>

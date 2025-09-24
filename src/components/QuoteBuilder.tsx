@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Equipment, QuoteItem, ClientInfo, Formulas, Category, EquipmentBundle } from '../types';
+import { Equipment, QuoteItem, ClientInfo, Formulas, Category, EquipmentBundle, CompanySettings } from '../types';
 import equipmentData from '../data/equipment.json';
 import categoriesData from '../data/categories.json';
 import formulasData from '../data/formulas.json';
@@ -22,6 +22,7 @@ const QuoteBuilder: React.FC = () => {
   const [showClientSuggestions, setShowClientSuggestions] = useState(false);
   const clientSuggestionsRef = useRef<HTMLDivElement>(null);
   const [previewBundle, setPreviewBundle] = useState<EquipmentBundle | null>(null);
+  const [companySettings, setCompanySettings] = useState<CompanySettings>({} as CompanySettings);
   const [clientInfo, setClientInfo] = useState<ClientInfo>({
     name: '',
     abn: '',
@@ -50,6 +51,23 @@ const QuoteBuilder: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('fire-quotes-favorites', JSON.stringify(favorites));
   }, [favorites]);
+
+  // Load company settings on component mount
+  useEffect(() => {
+    const loadCompanySettings = () => {
+      try {
+        const savedSettings = localStorage.getItem('company-settings');
+        if (savedSettings) {
+          const settings = JSON.parse(savedSettings);
+          setCompanySettings(settings);
+        }
+      } catch (error) {
+        console.error('Error loading company settings:', error);
+      }
+    };
+
+    loadCompanySettings();
+  }, []);
 
   // Load saved clients on component mount
   useEffect(() => {
@@ -315,17 +333,17 @@ const QuoteBuilder: React.FC = () => {
 
   const handleExportPDF = () => {
     const quoteNum = generateQuoteNumber();
-    exportToPDF(quoteNum, clientInfo, selectedItems, subtotal, gstAmount, total);
+    exportToPDF(quoteNum, clientInfo, selectedItems, subtotal, gstAmount, total, companySettings);
   };
 
   const handleExportExcel = () => {
     const quoteNum = generateQuoteNumber();
-    exportToExcel(quoteNum, clientInfo, selectedItems, subtotal, gstAmount, total);
+    exportToExcel(quoteNum, clientInfo, selectedItems, subtotal, gstAmount, total, companySettings);
   };
 
   const handleExportCSV = () => {
     const quoteNum = generateQuoteNumber();
-    exportToCSV(quoteNum, clientInfo, selectedItems, subtotal, gstAmount, total);
+    exportToCSV(quoteNum, clientInfo, selectedItems, subtotal, gstAmount, total, companySettings);
   };
 
   return (

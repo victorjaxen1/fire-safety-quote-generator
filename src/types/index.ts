@@ -67,3 +67,37 @@ export interface EquipmentBundle {
   createdAt: string;
   usageCount: number;
 }
+
+export interface CompanyAddress {
+  street: string;
+  suburb: string;
+  state: string;
+  postcode: string;
+  country: string;
+}
+
+export interface BankDetails {
+  accountName: string;
+  bsb: string;
+  accountNumber: string;
+}
+
+export interface CompanySettings {
+  companyName: string;
+  tradingName?: string;
+  abn?: string;
+  address: CompanyAddress;
+  phone: string;
+  email: string;
+  website?: string;
+  logoUrl?: string;
+  primaryColor?: string;
+  termsAndConditions: string;
+  paymentTerms: string;
+  validityPeriod: number;
+  footerText: string;
+  bankDetails?: BankDetails;
+  lastUpdated: string;
+  version: number;
+  isConfigured: boolean;
+}
