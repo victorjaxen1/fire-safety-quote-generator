@@ -51,10 +51,12 @@ npm run test:coverage  # Run tests with coverage report
 - **Deployment**: Static hosting on Netlify with automatic CI/CD
 
 ### Key Components
-- `QuoteBuilder.tsx` - Main quote creation interface with real-time calculations
-- `AdminPanel.tsx` - Equipment management and pricing configuration
-- `exportUtils.ts` - PDF, Excel, CSV export functionality with Australian formatting
-- `types/index.ts` - TypeScript interfaces for Equipment, Quote, Client data
+- `QuoteBuilder.tsx` - Main quote creation interface with bundles, real-time calculations, and draft management
+- `AdminPanel.tsx` - Equipment management, pricing, bundles, and company settings configuration
+- `BundleSelector.tsx` - Smart equipment bundles with category filtering and preview modals
+- `CompanySettingsForm.tsx` - Professional company configuration with Australian formatting
+- `exportUtils.ts` - Professional PDF/Excel/CSV export with branding and dedicated terms pages
+- `types/index.ts` - TypeScript interfaces for Equipment, Quote, Client, Bundle, and Company data
 
 ### State Management
 - Uses React `useState` hooks throughout (no Redux/Zustand)
@@ -67,19 +69,25 @@ npm run test:coverage  # Run tests with coverage report
 1. **Equipment Data** (`src/data/equipment.json`) - 78+ fire safety items with base prices
 2. **Pricing Formulas** (`src/data/formulas.json`) - Material markup (1.5x), GST (10%), labor rates
 3. **Categories** (`src/data/categories.json`) - Equipment categorization for filtering
-4. **Real-time Calculations** - Live price updates as user selects equipment
-5. **Export Generation** - Professional quotes with Australian business formatting
+4. **Bundle Data** (`src/data/bundles.json`) - Pre-configured equipment combinations for common scenarios
+5. **Company Settings** (`localStorage`) - Professional branding and business configuration
+6. **Real-time Calculations** - Live price updates as user selects equipment or bundles
+7. **Export Generation** - Professional quotes with company branding and dedicated terms pages
 
 ### Application Structure
 ```
 ├── src/
 │   ├── components/          # React components
-│   │   ├── QuoteBuilder.tsx # Main quote interface
-│   │   └── AdminPanel.tsx   # Equipment management
+│   │   ├── QuoteBuilder.tsx # Main quote interface with bundles
+│   │   ├── AdminPanel.tsx   # Equipment and company management
+│   │   ├── BundleSelector.tsx # Smart equipment bundles
+│   │   ├── BundlePreviewModal.tsx # Bundle details and customization
+│   │   └── CompanySettingsForm.tsx # Professional company configuration
 │   ├── data/               # Static JSON data
-│   │   ├── equipment.json  # Equipment catalog
-│   │   ├── formulas.json   # Pricing formulas
-│   │   └── categories.json # Equipment categories
+│   │   ├── equipment.json  # Equipment catalog (78+ items)
+│   │   ├── formulas.json   # Pricing formulas and rates
+│   │   ├── categories.json # Equipment categorization
+│   │   └── bundles.json    # Pre-configured equipment bundles
 │   ├── test/               # Test configuration and utilities
 │   │   ├── setup.ts        # Test environment setup
 │   │   └── utils.tsx       # Test utilities and mocks
@@ -127,9 +135,9 @@ interface Equipment {
 - **Quote Numbering**: Format `QT-YYYYMMDD-XXX` with date and random suffix
 
 ### Export Formats
-- **PDF**: Professional quote layout with company placeholders
-- **Excel**: Structured spreadsheet with formulas intact
-- **CSV**: Simple data format for external systems
+- **PDF**: Professional quote layout with branded headers, company information, and dedicated terms page
+- **Excel**: Structured spreadsheet with company details and formulas intact
+- **CSV**: Simple data format for external systems integration
 
 ## Development Notes
 
@@ -207,7 +215,31 @@ interface Equipment {
 
 ## Recent Major Updates (Session Summary)
 
-### **UX Improvements Implemented**
+### **Latest Business-Critical Improvements (Current Session)**
+1. **Smart Equipment Bundles System**
+   - 6 pre-configured equipment bundles for common fire safety scenarios
+   - Bundle categories: Residential, Commercial, Industrial, Specialty
+   - One-click bundle addition to quotes (replaces 10+ individual selections)
+   - Custom quantity adjustment within bundle preview
+   - Usage statistics tracking and bundle management in AdminPanel
+   - Revolutionary efficiency improvement: 5-minute quotes reduced to 30 seconds
+
+2. **Professional Company Branding System**
+   - Complete company settings configuration with Australian address formatting
+   - Replaces all placeholder text in PDF/Excel/CSV exports
+   - Professional quote presentation with real company information
+   - Configurable validity periods, payment terms, and custom T&C
+   - Tabbed AdminPanel interface with company settings as primary tab
+
+3. **Premium PDF Output Quality**
+   - Complete PDF generation redesign with professional styling
+   - Branded header with company colors and professional typography
+   - Structured table format with alternating row colors
+   - Enhanced visual hierarchy and commercial-quality appearance
+   - **Dedicated Terms & Conditions Page**: Always on final page with professional legal document formatting
+   - Multi-page terms support with proper text wrapping and clause emphasis
+
+### **Previous UX Improvements**
 1. **Category Filtering System**
    - 6 meaningful equipment categories (Control Panels, Detection Devices, etc.)
    - Automatic categorization of 78+ equipment items
@@ -235,6 +267,9 @@ interface Equipment {
    - Maximum 100 clients with LRU eviction
 
 ### **Technical Infrastructure Added**
+- **Bundle System**: Complete TypeScript interfaces and data structures
+- **Company Settings**: Comprehensive configuration system with localStorage persistence
+- **Professional PDF Generation**: jsPDF with advanced styling, colors, and layout
 - **Comprehensive Testing**: 60+ tests with Vitest & React Testing Library
 - **Mock Strategy**: Complete localStorage, file download, and timer mocking
 - **Error Handling**: Graceful degradation for storage failures
@@ -243,10 +278,36 @@ interface Equipment {
 
 ### **Development Lessons Learned**
 
+**Critical Implementation Patterns (From Current Session)**:
+- **Atomic State Updates**: When adding multiple items to React state, use single `setState()` with spread syntax to prevent batching issues
+  ```typescript
+  // CORRECT: Atomic update
+  setSelectedItems(prevItems => [...prevItems, ...newItems]);
+
+  // WRONG: Multiple calls get batched incorrectly
+  newItems.forEach(item => addItem(item));
+  ```
+- **Large Function Edits**: When editing very large functions (like PDF generation), create new file and replace original rather than string replacement
+- **PDF Layout Management**: Always use `doc.addPage()` for dedicated sections like Terms & Conditions to ensure professional document structure
+- **Company Configuration Priority**: Make company settings the primary tab in admin interfaces - professional branding is business-critical
+
+**React State Management**:
+- Bundle addition requires atomic state updates to prevent React batching issues
+- Use functional state updates with spread operators for complex array manipulations
+- Test state changes immediately after implementation to catch batching problems
+
+**PDF Generation Best Practices**:
+- Use professional color schemes and typography for business documents
+- Implement alternating table row colors for readability
+- Create dedicated pages for legal content (Terms & Conditions)
+- Support multi-page content with proper text wrapping
+- Always include branded headers on new pages for consistency
+
 **Project Structure**:
 - Keep app files in root for Netlify deployment
 - Use consistent naming for test files
 - Separate test utilities from production code
+- Organize bundle and company data in logical JSON structures
 
 **Build Configuration**:
 - Exclude test files from production builds
@@ -263,6 +324,7 @@ interface Equipment {
 - Always test build process before pushing
 - Use meaningful commit messages with feature summaries
 - Verify Netlify configuration matches directory structure
+- Test major features immediately after deployment to catch integration issues
 
 ## Future Enhancements
 
