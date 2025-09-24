@@ -2,7 +2,7 @@
   {
     "id": 1,
     "name": "Fire Indicator Panel",
-    "category": "Control Panels",
+    "category": "Fire Safety Equipment",
     "basePrice": 2500,
     "unit": "each",
     "description": "Fire safety equipment: Fire Indicator Panel"
@@ -10,7 +10,7 @@
   {
     "id": 2,
     "name": "OWS Panel",
-    "category": "Control Panels",
+    "category": "Fire Safety Equipment",
     "basePrice": 1800,
     "unit": "each",
     "description": "Fire safety equipment: OWS Panel"
@@ -18,7 +18,7 @@
   {
     "id": 3,
     "name": "Fire Fan Control Modules Fitted in FIP",
-    "category": "Control Panels",
+    "category": "Fire Safety Equipment",
     "basePrice": 450,
     "unit": "each",
     "description": "Fire safety equipment: Fire Fan Control Modules Fitted in FIP"
@@ -26,7 +26,7 @@
   {
     "id": 4,
     "name": "Mimic Panels",
-    "category": "Control Panels",
+    "category": "Fire Safety Equipment",
     "basePrice": 800,
     "unit": "each",
     "description": "Fire safety equipment: Mimic Panels"
@@ -34,7 +34,7 @@
   {
     "id": 5,
     "name": "Wireless Translator",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 350,
     "unit": "each",
     "description": "Fire safety equipment: Wireless Translator"
@@ -42,7 +42,7 @@
   {
     "id": 6,
     "name": "Manual Call Points",
-    "category": "Manual Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 65,
     "unit": "each",
     "description": "Fire safety equipment: Manual Call Points"
@@ -50,7 +50,7 @@
   {
     "id": 7,
     "name": "AFI",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: AFI"
@@ -58,7 +58,7 @@
   {
     "id": 8,
     "name": "ADM",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: ADM"
@@ -66,7 +66,7 @@
   {
     "id": 9,
     "name": "WIP Phones",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: WIP Phones"
@@ -74,7 +74,7 @@
   {
     "id": 10,
     "name": "EWIS Panel",
-    "category": "Control Panels",
+    "category": "Fire Safety Equipment",
     "basePrice": 1200,
     "unit": "each",
     "description": "Fire safety equipment: EWIS Panel"
@@ -82,7 +82,7 @@
   {
     "id": 11,
     "name": "Alerting Devices",
-    "category": "Alerting Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Alerting Devices"
@@ -90,7 +90,7 @@
   {
     "id": 12,
     "name": "Sounder Base",
-    "category": "Alerting Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 85,
     "unit": "each",
     "description": "Fire safety equipment: Sounder Base"
@@ -98,7 +98,7 @@
   {
     "id": 13,
     "name": "Strobes",
-    "category": "Alerting Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Strobes"
@@ -106,7 +106,7 @@
   {
     "id": 14,
     "name": "Batteries",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Batteries"
@@ -114,7 +114,7 @@
   {
     "id": 15,
     "name": "Smoke Detectors",
-    "category": "Detection Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 120,
     "unit": "each",
     "description": "Fire safety equipment: Smoke Detectors"
@@ -122,7 +122,7 @@
   {
     "id": 16,
     "name": "Wireless Sounder",
-    "category": "Alerting Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 85,
     "unit": "each",
     "description": "Fire safety equipment: Wireless Sounder"
@@ -130,7 +130,7 @@
   {
     "id": 17,
     "name": "Heat Detectors",
-    "category": "Detection Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 120,
     "unit": "each",
     "description": "Fire safety equipment: Heat Detectors"
@@ -138,7 +138,7 @@
   {
     "id": 18,
     "name": "Detector Bases",
-    "category": "Detection Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 120,
     "unit": "each",
     "description": "Fire safety equipment: Detector Bases"
@@ -146,7 +146,7 @@
   {
     "id": 19,
     "name": "24v Sounders",
-    "category": "Alerting Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 85,
     "unit": "each",
     "description": "Fire safety equipment: 24v Sounders"
@@ -154,7 +154,7 @@
   {
     "id": 20,
     "name": "Detector Strobe Base",
-    "category": "Detection Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 120,
     "unit": "each",
     "description": "Fire safety equipment: Detector Strobe Base"
@@ -162,7 +162,7 @@
   {
     "id": 21,
     "name": "Occupant Warning Equipment",
-    "category": "Alerting Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Occupant Warning Equipment"
@@ -170,7 +170,7 @@
   {
     "id": 22,
     "name": "100mm Recessed Occupant Warning Speakers",
-    "category": "Alerting Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 100mm Recessed Occupant Warning Speakers"
@@ -178,7 +178,7 @@
   {
     "id": 23,
     "name": "200mm Recessed Occupant Warning Speakers",
-    "category": "Alerting Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 200mm Recessed Occupant Warning Speakers"
@@ -186,7 +186,7 @@
   {
     "id": 24,
     "name": "100mm Surface Occupant Warning Speakers",
-    "category": "Alerting Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 100mm Surface Occupant Warning Speakers"
@@ -194,7 +194,7 @@
   {
     "id": 25,
     "name": "200mm Surface Occupant Warning Speakers",
-    "category": "Alerting Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 200mm Surface Occupant Warning Speakers"
@@ -202,7 +202,7 @@
   {
     "id": 26,
     "name": "Carpark Horn",
-    "category": "Alerting Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Carpark Horn"
@@ -210,7 +210,7 @@
   {
     "id": 27,
     "name": "Manual Safety Devices",
-    "category": "Manual Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Manual Safety Devices"
@@ -218,7 +218,7 @@
   {
     "id": 28,
     "name": "Fire Panel Recess Kit",
-    "category": "Control Panels",
+    "category": "Fire Safety Equipment",
     "basePrice": 1200,
     "unit": "each",
     "description": "Fire safety equipment: Fire Panel Recess Kit"
@@ -226,7 +226,7 @@
   {
     "id": 29,
     "name": "Duct Probes",
-    "category": "Detection Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Duct Probes"
@@ -234,7 +234,7 @@
   {
     "id": 30,
     "name": "Input/Output Modules",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 95,
     "unit": "each",
     "description": "Fire safety equipment: Input/Output Modules"
@@ -242,7 +242,7 @@
   {
     "id": 31,
     "name": "AAF",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: AAF"
@@ -250,7 +250,7 @@
   {
     "id": 32,
     "name": "Circuit Protection",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Circuit Protection"
@@ -258,7 +258,7 @@
   {
     "id": 33,
     "name": "20A RCD/MCB",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 20A RCD/MCB"
@@ -266,7 +266,7 @@
   {
     "id": 34,
     "name": "Single Pole Surface Circuit Breaker Enclosure",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Single Pole Surface Circuit Breaker Enclosure"
@@ -274,7 +274,7 @@
   {
     "id": 35,
     "name": "Relays",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Relays"
@@ -282,7 +282,7 @@
   {
     "id": 36,
     "name": "Magnetic Door Holders",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Magnetic Door Holders"
@@ -290,7 +290,7 @@
   {
     "id": 37,
     "name": "Short Circuit Isolators",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 85,
     "unit": "each",
     "description": "Fire safety equipment: Short Circuit Isolators"
@@ -298,7 +298,7 @@
   {
     "id": 38,
     "name": "Installation Components",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Installation Components"
@@ -306,7 +306,7 @@
   {
     "id": 39,
     "name": "Drillings Holes in Concrete Slabs",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Drillings Holes in Concrete Slabs"
@@ -314,7 +314,7 @@
   {
     "id": 40,
     "name": "Blue Glue",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Blue Glue"
@@ -322,7 +322,7 @@
   {
     "id": 41,
     "name": "Cable Ties",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Cable Ties"
@@ -330,7 +330,7 @@
   {
     "id": 42,
     "name": "Fire Rated Sealant and Photos",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Fire Rated Sealant and Photos"
@@ -338,7 +338,7 @@
   {
     "id": 43,
     "name": "Cabling and Wiring",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Cabling and Wiring"
@@ -346,7 +346,7 @@
   {
     "id": 44,
     "name": "Data Cable",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Data Cable"
@@ -354,7 +354,7 @@
   {
     "id": 45,
     "name": "1.5mm Fire Rated Cable",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 1.5mm Fire Rated Cable"
@@ -362,7 +362,7 @@
   {
     "id": 46,
     "name": "1.5mm Red Twin Flat Installed in Conduit",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 1.5mm Red Twin Flat Installed in Conduit"
@@ -370,7 +370,7 @@
   {
     "id": 47,
     "name": "1.5mm Red Twin Twisted Installed in Conduit",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 1.5mm Red Twin Twisted Installed in Conduit"
@@ -378,7 +378,7 @@
   {
     "id": 48,
     "name": "1.5mm Red Twin Flat Installed Through a Roof Space",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 1.5mm Red Twin Flat Installed Through a Roof Space"
@@ -386,7 +386,7 @@
   {
     "id": 49,
     "name": "1.5mm Red Twin Twisted Installed Through a Roof Space",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 1.5mm Red Twin Twisted Installed Through a Roof Space"
@@ -394,7 +394,7 @@
   {
     "id": 50,
     "name": "2.5mm T&E",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 2.5mm T&E"
@@ -402,7 +402,7 @@
   {
     "id": 51,
     "name": "Conduits and Ducting",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Conduits and Ducting"
@@ -410,7 +410,7 @@
   {
     "id": 52,
     "name": "20mm Conduit Installed in a Deck",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 20mm Conduit Installed in a Deck"
@@ -418,7 +418,7 @@
   {
     "id": 53,
     "name": "20mm Conduit Installed Surface",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 20mm Conduit Installed Surface"
@@ -426,7 +426,7 @@
   {
     "id": 54,
     "name": "25mm Conduit Installed in a Deck",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 25mm Conduit Installed in a Deck"
@@ -434,7 +434,7 @@
   {
     "id": 55,
     "name": "25mm Conduit Installed Surface",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 25mm Conduit Installed Surface"
@@ -442,7 +442,7 @@
   {
     "id": 56,
     "name": "Location Flanges",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Location Flanges"
@@ -450,7 +450,7 @@
   {
     "id": 57,
     "name": "16mm x 16mm Duct",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 16mm x 16mm Duct"
@@ -458,7 +458,7 @@
   {
     "id": 58,
     "name": "16mm x 25mm Duct",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 16mm x 25mm Duct"
@@ -466,7 +466,7 @@
   {
     "id": 59,
     "name": "50mm x 50mm Duct",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 50mm x 50mm Duct"
@@ -474,7 +474,7 @@
   {
     "id": 60,
     "name": "1 way deep conduit boxes",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 1 way deep conduit boxes"
@@ -482,7 +482,7 @@
   {
     "id": 61,
     "name": "2 way deep conduit boxes",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 2 way deep conduit boxes"
@@ -490,7 +490,7 @@
   {
     "id": 62,
     "name": "3 way deep conduit boxes",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 3 way deep conduit boxes"
@@ -498,7 +498,7 @@
   {
     "id": 63,
     "name": "4 way deep conduit boxes",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 4 way deep conduit boxes"
@@ -506,7 +506,7 @@
   {
     "id": 64,
     "name": "1 way shallow conduit boxes",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 1 way shallow conduit boxes"
@@ -514,7 +514,7 @@
   {
     "id": 65,
     "name": "2 way shallow conduit boxes",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 2 way shallow conduit boxes"
@@ -522,7 +522,7 @@
   {
     "id": 66,
     "name": "3 way shallow conduit boxes",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 3 way shallow conduit boxes"
@@ -530,7 +530,7 @@
   {
     "id": 67,
     "name": "4 way shallow conduit boxes",
-    "category": "Cables & Wiring",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: 4 way shallow conduit boxes"
@@ -538,7 +538,7 @@
   {
     "id": 68,
     "name": "As-Built Documentation and Certification",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: As-Built Documentation and Certification"
@@ -546,7 +546,7 @@
   {
     "id": 69,
     "name": "Block Plan",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Block Plan"
@@ -554,7 +554,7 @@
   {
     "id": 70,
     "name": "Signage",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Signage"
@@ -562,7 +562,7 @@
   {
     "id": 71,
     "name": "Testing and Certification",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Testing and Certification"
@@ -570,7 +570,7 @@
   {
     "id": 72,
     "name": "Electronic As-Built Documentation",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Electronic As-Built Documentation"
@@ -578,7 +578,7 @@
   {
     "id": 73,
     "name": "Programming",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Programming"
@@ -586,7 +586,7 @@
   {
     "id": 74,
     "name": "Miscellaneous",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Miscellaneous"
@@ -594,7 +594,7 @@
   {
     "id": 75,
     "name": "Parking",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Parking"
@@ -602,7 +602,7 @@
   {
     "id": 76,
     "name": "Misc",
-    "category": "Installation Hardware",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Misc"
@@ -610,7 +610,7 @@
   {
     "id": 77,
     "name": "Smoke Alarms",
-    "category": "Detection Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Smoke Alarms"
@@ -618,7 +618,7 @@
   {
     "id": 78,
     "name": "Smoke Alarms",
-    "category": "Detection Devices",
+    "category": "Fire Safety Equipment",
     "basePrice": 100,
     "unit": "each",
     "description": "Fire safety equipment: Smoke Alarms"
