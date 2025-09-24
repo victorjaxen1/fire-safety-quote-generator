@@ -1016,6 +1016,7 @@ const QuoteBuilder: React.FC = () => {
             })}
           </div>
         </div>
+      </div>
       </CollapsibleSection>
 
       {/* Quote Summary & Review */}
@@ -1105,7 +1106,6 @@ const QuoteBuilder: React.FC = () => {
               {/* Export actions now handled by contextual actions bar */}
             </div>
           )}
-        </div>
       </CollapsibleSection>
 
       {/* Bundle Preview Modal */}
