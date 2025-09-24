@@ -21,159 +21,248 @@ export const exportToPDF = (
 ) => {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.width;
-  let yPosition = 20;
+  const pageHeight = doc.internal.pageSize.height;
+  const margins = { left: 20, right: 20, top: 20, bottom: 20 };
+  let yPosition = margins.top;
 
-  // Header
-  doc.setFontSize(20);
-  doc.text('QUOTATION', pageWidth / 2, yPosition, { align: 'center' });
-  yPosition += 15;
+  // Colors for professional styling
+  const primaryColor = companySettings?.primaryColor || '#1f2937';
+  const lightGray = '#f3f4f6';
+  const darkGray = '#374151';
 
-  // Company information
-  doc.setFontSize(12);
+  // Helper function to convert hex to RGB
+  const hexToRgb = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : { r: 31, g: 41, b: 55 };
+  };
+
+  const primaryRgb = hexToRgb(primaryColor);
+
+  // HEADER SECTION WITH BACKGROUND
+  doc.setFillColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
+  doc.rect(0, 0, pageWidth, 35, 'F');
+
+  // Company name in header
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(24);
+  doc.setFont(undefined, 'bold');
   if (companySettings?.isConfigured) {
-    doc.setFontSize(14);
-    doc.text(companySettings.companyName, 20, yPosition);
-    yPosition += 6;
-
-    if (companySettings.tradingName) {
-      doc.setFontSize(10);
-      doc.text(`Trading as: ${companySettings.tradingName}`, 20, yPosition);
-      yPosition += 5;
-    }
-
-    doc.setFontSize(10);
-    doc.text(companySettings.address.street, 20, yPosition);
-    yPosition += 4;
-    doc.text(`${companySettings.address.suburb}, ${companySettings.address.state} ${companySettings.address.postcode}`, 20, yPosition);
-    yPosition += 4;
-    doc.text(companySettings.address.country, 20, yPosition);
-    yPosition += 6;
-
-    if (companySettings.abn) {
-      doc.text(`ABN: ${companySettings.abn}`, 20, yPosition);
-      yPosition += 4;
-    }
-
-    doc.text(`Phone: ${companySettings.phone}`, 20, yPosition);
-    yPosition += 4;
-    doc.text(`Email: ${companySettings.email}`, 20, yPosition);
-    yPosition += 4;
-
-    if (companySettings.website) {
-      doc.text(`Website: ${companySettings.website}`, 20, yPosition);
-      yPosition += 4;
-    }
-
-    yPosition += 6;
+    doc.text(companySettings.companyName, margins.left, 25);
   } else {
-    // Fallback to placeholders if not configured
-    doc.text('[COMPANY NAME - Configure in Admin Panel]', 20, yPosition);
-    yPosition += 5;
-    doc.text('[COMPANY ADDRESS]', 20, yPosition);
-    yPosition += 5;
-    doc.text('ABN: [COMPANY ABN]', 20, yPosition);
-    yPosition += 5;
-    doc.text('Phone: [COMPANY PHONE]', 20, yPosition);
-    yPosition += 15;
+    doc.text('[CONFIGURE COMPANY NAME]', margins.left, 25);
   }
 
-  // Quote details
-  doc.text(`Quote Number: ${quoteNumber}`, 20, yPosition);
-  doc.text(`Date: ${format(new Date(), 'dd/MM/yyyy')}`, pageWidth - 60, yPosition);
+  // QUOTATION title on right
+  doc.setFontSize(20);
+  doc.text('QUOTATION', pageWidth - margins.right, 25, { align: 'right' });
+
+  yPosition = 45;
+
+  // COMPANY DETAILS SECTION
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(10);
+  doc.setFont(undefined, 'normal');
+
+  if (companySettings?.isConfigured) {
+    const companyDetails = [
+      companySettings.address.street,
+      `${companySettings.address.suburb}, ${companySettings.address.state} ${companySettings.address.postcode}`,
+      companySettings.address.country,
+      ...(companySettings.abn ? [`ABN: ${companySettings.abn}`] : []),
+      `Phone: ${companySettings.phone}`,
+      `Email: ${companySettings.email}`,
+      ...(companySettings.website ? [`Web: ${companySettings.website}`] : [])
+    ];
+
+    companyDetails.forEach((detail) => {
+      doc.text(detail, margins.left, yPosition);
+      yPosition += 4;
+    });
+  } else {
+    doc.text('Configure company details in Admin Panel', margins.left, yPosition);
+    yPosition += 8;
+  }
+
+  // QUOTE DETAILS BOX
   yPosition += 5;
   const validityDays = companySettings?.validityPeriod || 30;
-  doc.text(`Valid Until: ${format(new Date(Date.now() + validityDays * 24 * 60 * 60 * 1000), 'dd/MM/yyyy')}`, pageWidth - 60, yPosition);
-  yPosition += 15;
 
-  // Client information
-  doc.text('Quote For:', 20, yPosition);
-  yPosition += 8;
-  doc.text(clientInfo.name, 20, yPosition);
-  yPosition += 5;
-  if (clientInfo.abn) {
-    doc.text(`ABN: ${clientInfo.abn}`, 20, yPosition);
-    yPosition += 5;
-  }
-  doc.text(`${clientInfo.address}`, 20, yPosition);
-  yPosition += 5;
-  doc.text(`${clientInfo.suburb} ${clientInfo.state} ${clientInfo.postcode}`, 20, yPosition);
-  yPosition += 5;
-  doc.text(`Contact: ${clientInfo.contactPerson}`, 20, yPosition);
-  yPosition += 5;
-  doc.text(`Email: ${clientInfo.email}`, 20, yPosition);
-  yPosition += 5;
-  doc.text(`Phone: ${clientInfo.phone}`, 20, yPosition);
-  yPosition += 15;
+  // Light background box for quote details
+  doc.setFillColor(243, 244, 246);
+  doc.rect(pageWidth - 100, yPosition - 3, 80, 20, 'F');
 
-  // Items table header
+  doc.setFontSize(9);
+  doc.setFont(undefined, 'bold');
+  doc.text('Quote Number:', pageWidth - 95, yPosition + 2);
+  doc.setFont(undefined, 'normal');
+  doc.text(quoteNumber, pageWidth - 95, yPosition + 6);
+
+  doc.setFont(undefined, 'bold');
+  doc.text('Date:', pageWidth - 95, yPosition + 10);
+  doc.setFont(undefined, 'normal');
+  doc.text(format(new Date(), 'dd/MM/yyyy'), pageWidth - 95, yPosition + 14);
+
+  doc.setFont(undefined, 'bold');
+  doc.text('Valid Until:', pageWidth - 45, yPosition + 2);
+  doc.setFont(undefined, 'normal');
+  doc.text(format(new Date(Date.now() + validityDays * 24 * 60 * 60 * 1000), 'dd/MM/yyyy'), pageWidth - 45, yPosition + 6);
+
+  yPosition += 35;
+
+  // CLIENT INFORMATION SECTION
+  doc.setFillColor(55, 65, 81);
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(12);
+  doc.setFont(undefined, 'bold');
+  doc.rect(margins.left, yPosition - 3, pageWidth - margins.left - margins.right, 8, 'F');
+  doc.text('QUOTE FOR:', margins.left + 3, yPosition + 2);
+
+  yPosition += 12;
+  doc.setTextColor(0, 0, 0);
   doc.setFontSize(10);
-  doc.text('Description', 20, yPosition);
-  doc.text('Qty', 120, yPosition);
-  doc.text('Unit Price', 140, yPosition);
-  doc.text('Total', 170, yPosition);
-  yPosition += 3;
+  doc.setFont(undefined, 'normal');
 
-  // Draw line under header
-  doc.line(20, yPosition, pageWidth - 20, yPosition);
-  yPosition += 5;
+  const clientDetails = [
+    `Company: ${clientInfo.name}`,
+    `Contact: ${clientInfo.contactPerson}`,
+    `Address: ${clientInfo.address}`,
+    `${clientInfo.suburb}, ${clientInfo.state} ${clientInfo.postcode}`,
+    `Email: ${clientInfo.email}`,
+    `Phone: ${clientInfo.phone}`
+  ];
 
-  // Items
-  items.forEach((item) => {
-    if (yPosition > 250) {
-      doc.addPage();
-      yPosition = 20;
-    }
-
-    doc.text(item.equipment.name, 20, yPosition);
-    doc.text(item.quantity.toString(), 120, yPosition);
-    doc.text(`$${item.unitPrice.toFixed(2)}`, 140, yPosition);
-    doc.text(`$${item.totalPrice.toFixed(2)}`, 170, yPosition);
-    yPosition += 5;
+  clientDetails.forEach((detail) => {
+    doc.text(detail, margins.left + 3, yPosition);
+    yPosition += 4;
   });
 
-  // Totals
-  yPosition += 5;
-  doc.line(120, yPosition, pageWidth - 20, yPosition);
-  yPosition += 8;
+  yPosition += 10;
 
-  doc.text('Subtotal:', 140, yPosition);
-  doc.text(`$${subtotal.toFixed(2)}`, 170, yPosition);
+  // ITEMS TABLE WITH PROPER FORMATTING
+  // Table header
+  doc.setFillColor(55, 65, 81);
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(10);
+  doc.setFont(undefined, 'bold');
+  doc.rect(margins.left, yPosition - 3, pageWidth - margins.left - margins.right, 8, 'F');
+
+  // Column headers with proper alignment
+  doc.text('DESCRIPTION', margins.left + 3, yPosition + 2);
+  doc.text('QTY', pageWidth - 100, yPosition + 2, { align: 'center' });
+  doc.text('UNIT PRICE', pageWidth - 70, yPosition + 2, { align: 'center' });
+  doc.text('TOTAL', pageWidth - 30, yPosition + 2, { align: 'center' });
+
+  yPosition += 12;
+
+  // Table rows with alternating colors
+  doc.setTextColor(0, 0, 0);
+  doc.setFont(undefined, 'normal');
+
+  items.forEach((item, index) => {
+    if (yPosition > pageHeight - 80) {
+      doc.addPage();
+      yPosition = margins.top + 10;
+    }
+
+    // Alternating row colors
+    if (index % 2 === 0) {
+      doc.setFillColor(248, 249, 250);
+      doc.rect(margins.left, yPosition - 2, pageWidth - margins.left - margins.right, 8, 'F');
+    }
+
+    // Truncate long equipment names
+    const itemName = item.equipment.name.length > 45
+      ? item.equipment.name.substring(0, 45) + '...'
+      : item.equipment.name;
+
+    doc.text(itemName, margins.left + 3, yPosition + 2);
+    doc.text(item.quantity.toString(), pageWidth - 100, yPosition + 2, { align: 'center' });
+    doc.text(`$${item.unitPrice.toFixed(2)}`, pageWidth - 70, yPosition + 2, { align: 'center' });
+    doc.text(`$${item.totalPrice.toFixed(2)}`, pageWidth - 30, yPosition + 2, { align: 'center' });
+
+    yPosition += 8;
+  });
+
+  // TOTALS SECTION
   yPosition += 5;
 
-  doc.text('GST (10%):', 140, yPosition);
-  doc.text(`$${gst.toFixed(2)}`, 170, yPosition);
-  yPosition += 5;
+  // Totals box
+  doc.setFillColor(243, 244, 246);
+  doc.rect(pageWidth - 100, yPosition, 80, 25, 'F');
+  doc.setDrawColor(55, 65, 81);
+  doc.rect(pageWidth - 100, yPosition, 80, 25);
 
+  yPosition += 5;
+  doc.setFont(undefined, 'normal');
+  doc.text('Subtotal:', pageWidth - 95, yPosition);
+  doc.text(`$${subtotal.toFixed(2)}`, pageWidth - 25, yPosition, { align: 'right' });
+
+  yPosition += 5;
+  doc.text('GST (10%):', pageWidth - 95, yPosition);
+  doc.text(`$${gst.toFixed(2)}`, pageWidth - 25, yPosition, { align: 'right' });
+
+  yPosition += 5;
+  doc.setFont(undefined, 'bold');
   doc.setFontSize(12);
-  doc.text('Total:', 140, yPosition);
-  doc.text(`$${total.toFixed(2)}`, 170, yPosition);
+  doc.text('TOTAL:', pageWidth - 95, yPosition);
+  doc.text(`$${total.toFixed(2)}`, pageWidth - 25, yPosition, { align: 'right' });
 
-  // Footer with terms and conditions
-  yPosition = doc.internal.pageSize.height - 60;
-  doc.setFontSize(9);
+  // TERMS & CONDITIONS SECTION
+  yPosition = pageHeight - 70;
+
+  doc.setFillColor(55, 65, 81);
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(10);
+  doc.setFont(undefined, 'bold');
+  doc.rect(margins.left, yPosition - 3, pageWidth - margins.left - margins.right, 6, 'F');
+  doc.text('TERMS & CONDITIONS', margins.left + 3, yPosition);
+
+  yPosition += 8;
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(8);
+  doc.setFont(undefined, 'normal');
 
   if (companySettings?.isConfigured) {
-    // Custom terms and conditions
-    doc.text('TERMS & CONDITIONS:', 20, yPosition);
-    yPosition += 5;
+    // Format terms & conditions in columns for better readability
+    const termsLines = companySettings.termsAndConditions
+      .split('\n')
+      .filter(line => line.trim())
+      .slice(0, 6); // Limit to prevent overflow
 
-    doc.setFontSize(8);
-    const termsLines = companySettings.termsAndConditions.split('\n').filter(line => line.trim());
-    termsLines.forEach((line, index) => {
-      if (yPosition < doc.internal.pageSize.height - 20 && index < 8) { // Limit to prevent overflow
-        doc.text(line.substring(0, 120), 20, yPosition); // Truncate long lines
-        yPosition += 3.5;
-      }
+    const columnWidth = (pageWidth - margins.left - margins.right) / 2 - 10;
+    const leftColumn = termsLines.slice(0, 3);
+    const rightColumn = termsLines.slice(3, 6);
+
+    leftColumn.forEach((line, index) => {
+      const wrappedText = doc.splitTextToSize(line, columnWidth);
+      wrappedText.forEach((wrappedLine: string, lineIndex: number) => {
+        doc.text(wrappedLine, margins.left + 3, yPosition + (index * 6) + (lineIndex * 3));
+      });
     });
 
-    yPosition += 5;
-    doc.text(`Payment Terms: ${companySettings.paymentTerms}`, 20, yPosition);
+    rightColumn.forEach((line, index) => {
+      const wrappedText = doc.splitTextToSize(line, columnWidth);
+      wrappedText.forEach((wrappedLine: string, lineIndex: number) => {
+        doc.text(wrappedLine, pageWidth / 2 + 10, yPosition + (index * 6) + (lineIndex * 3));
+      });
+    });
+
+    // Payment terms and footer
+    yPosition += 20;
+    doc.setFont(undefined, 'bold');
+    doc.text(`Payment Terms: ${companySettings.paymentTerms}`, margins.left + 3, yPosition);
+
     yPosition += 4;
-    doc.text(companySettings.footerText, 20, yPosition);
+    doc.setFont(undefined, 'italic');
+    doc.text(companySettings.footerText, margins.left + 3, yPosition);
   } else {
-    // Default terms
-    doc.text('Terms: Payment due within 30 days. GST included where applicable.', 20, yPosition);
-    doc.text(`This quote is valid for ${validityDays} days from the date of issue.`, 20, yPosition + 5);
+    doc.text('Configure terms & conditions in Admin Panel → Company Settings', margins.left + 3, yPosition);
+    yPosition += 4;
+    doc.text(`This quote is valid for ${validityDays} days from the date of issue.`, margins.left + 3, yPosition);
   }
 
   doc.save(`Quote-${quoteNumber}.pdf`);
@@ -232,9 +321,9 @@ export const exportToExcel = (
       item.totalPrice
     ]),
     [''],
-    ['Subtotal:', '', '', subtotal],
-    ['GST (10%):', '', '', gst],
-    ['Total:', '', '', total]
+    ['', '', 'Subtotal:', subtotal],
+    ['', '', 'GST (10%):', gst],
+    ['', '', 'Total:', total]
   ];
 
   const worksheet = XLSX.utils.aoa_to_sheet(quoteData);
@@ -256,16 +345,12 @@ export const exportToCSV = (
     ['Quote Number', quoteNumber],
     ['Date', format(new Date(), 'dd/MM/yyyy')],
     ['Client', clientInfo.name],
-    ['ABN', clientInfo.abn || ''],
-    ['Address', `${clientInfo.address}, ${clientInfo.suburb} ${clientInfo.state} ${clientInfo.postcode}`],
     ['Contact', clientInfo.contactPerson],
-    ['Email', clientInfo.email],
-    ['Phone', clientInfo.phone],
     [''],
     ['Description', 'Quantity', 'Unit Price', 'Total Price'],
     ...items.map(item => [
       item.equipment.name,
-      item.quantity,
+      item.quantity.toString(),
       item.unitPrice.toFixed(2),
       item.totalPrice.toFixed(2)
     ]),
@@ -275,17 +360,12 @@ export const exportToCSV = (
     ['Total', '', '', total.toFixed(2)]
   ];
 
-  const csvContent = csvData.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+  const csvContent = csvData.map(row => row.join(',')).join('\n');
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-
-  if (link.download !== undefined) {
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `Quote-${quoteNumber}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Quote-${quoteNumber}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
 };

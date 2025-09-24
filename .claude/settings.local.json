@@ -21,7 +21,8 @@
       "Bash(npm install:*)",
       "Bash(git rm:*)",
       "Bash(git reset:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Read(//c/Users/ROGYNET IT/Downloads/**)"
     ],
     "deny": [],
     "ask": []
