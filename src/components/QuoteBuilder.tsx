@@ -259,16 +259,37 @@ const QuoteBuilder: React.FC = () => {
   };
 
   const addBundleToQuote = (bundle: EquipmentBundle, customQuantities?: Record<number, number>) => {
-    bundle.items.forEach(bundleItem => {
-      const equipmentItem = equipment.find(e => e.id === bundleItem.equipmentId);
-      if (equipmentItem) {
-        const quantity = customQuantities?.[bundleItem.equipmentId] || bundleItem.quantity;
+    setSelectedItems(prevItems => {
+      let updatedItems = [...prevItems];
 
-        // Add each item to the quote with the specified quantity
-        for (let i = 0; i < quantity; i++) {
-          addItem(equipmentItem);
+      bundle.items.forEach(bundleItem => {
+        const equipmentItem = equipment.find(e => e.id === bundleItem.equipmentId);
+        if (equipmentItem) {
+          const quantity = customQuantities?.[bundleItem.equipmentId] || bundleItem.quantity;
+          const existingIndex = updatedItems.findIndex(item => item.equipment.id === equipmentItem.id);
+
+          if (existingIndex >= 0) {
+            // Update existing item quantity
+            updatedItems[existingIndex] = {
+              ...updatedItems[existingIndex],
+              quantity: updatedItems[existingIndex].quantity + quantity,
+              totalPrice: (updatedItems[existingIndex].quantity + quantity) * updatedItems[existingIndex].unitPrice
+            };
+          } else {
+            // Add new item with full quantity
+            const unitPrice = equipmentItem.basePrice * formulas.materialMarkup;
+            const newItem: QuoteItem = {
+              equipment: equipmentItem,
+              quantity,
+              unitPrice,
+              totalPrice: unitPrice * quantity
+            };
+            updatedItems.push(newItem);
+          }
         }
-      }
+      });
+
+      return updatedItems;
     });
   };
 
