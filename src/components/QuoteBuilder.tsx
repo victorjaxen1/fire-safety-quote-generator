@@ -22,6 +22,7 @@ const QuoteBuilder: React.FC = () => {
   const [showClientSuggestions, setShowClientSuggestions] = useState(false);
   const clientSuggestionsRef = useRef<HTMLDivElement>(null);
   const [previewBundle, setPreviewBundle] = useState<EquipmentBundle | null>(null);
+  const [quoteNumber, setQuoteNumber] = useState<string>('');
   const [companySettings, setCompanySettings] = useState<CompanySettings>({} as CompanySettings);
   const [clientInfo, setClientInfo] = useState<ClientInfo>({
     name: '',
@@ -124,6 +125,7 @@ const QuoteBuilder: React.FC = () => {
           id: 'current-draft',
           clientInfo,
           selectedItems,
+          quoteNumber,
           lastSaved: new Date().toISOString(),
           autoSaved: true
         };
@@ -141,7 +143,7 @@ const QuoteBuilder: React.FC = () => {
 
     const debouncedSave = setTimeout(saveDraft, 2000); // Save after 2 seconds of inactivity
     return () => clearTimeout(debouncedSave);
-  }, [clientInfo, selectedItems]);
+  }, [clientInfo, selectedItems, quoteNumber]);
 
   const restoreDraft = () => {
     const savedDraft = localStorage.getItem('fire-quotes-draft');
@@ -150,6 +152,7 @@ const QuoteBuilder: React.FC = () => {
         const draft = JSON.parse(savedDraft);
         setClientInfo(draft.clientInfo);
         setSelectedItems(draft.selectedItems);
+        setQuoteNumber(draft.quoteNumber || '');
         setShowDraftRestore(false);
         setSaveStatus('saved');
       } catch (error) {
@@ -176,6 +179,7 @@ const QuoteBuilder: React.FC = () => {
       phone: ''
     });
     setSelectedItems([]);
+    setQuoteNumber('');
     clearDraft();
     setSaveStatus('saved');
     setShowClientSuggestions(false);
@@ -265,6 +269,11 @@ const QuoteBuilder: React.FC = () => {
       updated[existingIndex].totalPrice = updated[existingIndex].quantity * updated[existingIndex].unitPrice;
       setSelectedItems(updated);
     } else {
+      // Generate quote number if this is the first item
+      if (selectedItems.length === 0 && !quoteNumber) {
+        setQuoteNumber(generateQuoteNumber());
+      }
+
       const unitPrice = equip.basePrice * formulas.materialMarkup;
       const newItem: QuoteItem = {
         equipment: equip,
@@ -277,6 +286,11 @@ const QuoteBuilder: React.FC = () => {
   };
 
   const addBundleToQuote = (bundle: EquipmentBundle, customQuantities?: Record<number, number>) => {
+    // Generate quote number if this is the first items being added
+    if (selectedItems.length === 0 && !quoteNumber) {
+      setQuoteNumber(generateQuoteNumber());
+    }
+
     setSelectedItems(prevItems => {
       let updatedItems = [...prevItems];
 
@@ -317,7 +331,13 @@ const QuoteBuilder: React.FC = () => {
 
   const updateQuantity = (index: number, quantity: number) => {
     if (quantity <= 0) {
-      setSelectedItems(selectedItems.filter((_, i) => i !== index));
+      const newItems = selectedItems.filter((_, i) => i !== index);
+      setSelectedItems(newItems);
+
+      // Clear quote number if no items left
+      if (newItems.length === 0) {
+        setQuoteNumber('');
+      }
       return;
     }
 
@@ -332,18 +352,15 @@ const QuoteBuilder: React.FC = () => {
   const total = subtotal + gstAmount;
 
   const handleExportPDF = () => {
-    const quoteNum = generateQuoteNumber();
-    exportToPDF(quoteNum, clientInfo, selectedItems, subtotal, gstAmount, total, companySettings);
+    exportToPDF(quoteNumber, clientInfo, selectedItems, subtotal, gstAmount, total, companySettings);
   };
 
   const handleExportExcel = () => {
-    const quoteNum = generateQuoteNumber();
-    exportToExcel(quoteNum, clientInfo, selectedItems, subtotal, gstAmount, total, companySettings);
+    exportToExcel(quoteNumber, clientInfo, selectedItems, subtotal, gstAmount, total, companySettings);
   };
 
   const handleExportCSV = () => {
-    const quoteNum = generateQuoteNumber();
-    exportToCSV(quoteNum, clientInfo, selectedItems, subtotal, gstAmount, total, companySettings);
+    exportToCSV(quoteNumber, clientInfo, selectedItems, subtotal, gstAmount, total, companySettings);
   };
 
   return (
@@ -675,7 +692,21 @@ const QuoteBuilder: React.FC = () => {
 
         {/* Quote Summary */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">Quote Summary</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Quote Summary</h2>
+            {quoteNumber && (
+              <div className="flex items-center space-x-2">
+                <label className="text-sm text-gray-600 font-medium">Quote #:</label>
+                <input
+                  type="text"
+                  value={quoteNumber}
+                  onChange={(e) => setQuoteNumber(e.target.value)}
+                  className="px-3 py-1 border border-gray-300 rounded text-sm font-mono"
+                  placeholder="QT-YYYYMMDD-XXX"
+                />
+              </div>
+            )}
+          </div>
 
           <div className="space-y-3 mb-4">
             {selectedItems.map((item, index) => (
