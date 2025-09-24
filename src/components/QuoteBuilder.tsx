@@ -747,9 +747,9 @@ const QuoteBuilder: React.FC = () => {
                 <span>GST (10%):</span>
                 <span className="font-semibold">${gstAmount.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-lg font-bold border-t pt-2">
-                <span>Total:</span>
-                <span>${total.toFixed(2)}</span>
+              <div className="flex justify-between items-center bg-green-50 border border-green-200 rounded-lg p-4 mt-3">
+                <span className="text-xl font-bold text-gray-800">Total (AUD):</span>
+                <span className="text-3xl font-bold text-green-700">${total.toFixed(2)}</span>
               </div>
 
               <div className="flex space-x-2 mt-4">
