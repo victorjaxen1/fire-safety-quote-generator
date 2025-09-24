@@ -6,6 +6,8 @@ import formulasData from '../data/formulas.json';
 import { exportToPDF, exportToExcel, exportToCSV, generateQuoteNumber } from '../utils/exportUtils';
 import BundleSelector from './BundleSelector';
 import BundlePreviewModal from './BundlePreviewModal';
+import StepIndicator from './StepIndicator';
+import CollapsibleSection from './CollapsibleSection';
 
 const QuoteBuilder: React.FC = () => {
   const [equipment] = useState<Equipment[]>(equipmentData as Equipment[]);
@@ -23,6 +25,7 @@ const QuoteBuilder: React.FC = () => {
   const clientSuggestionsRef = useRef<HTMLDivElement>(null);
   const [previewBundle, setPreviewBundle] = useState<EquipmentBundle | null>(null);
   const [quoteNumber, setQuoteNumber] = useState<string>('');
+  const [currentStep, setCurrentStep] = useState<number>(1);
   const [companySettings, setCompanySettings] = useState<CompanySettings>({} as CompanySettings);
   const [clientInfo, setClientInfo] = useState<ClientInfo>({
     name: '',
@@ -243,6 +246,66 @@ const QuoteBuilder: React.FC = () => {
     });
   };
 
+  // Step completion logic
+  const isClientComplete = () => clientInfo.name.trim() && clientInfo.email.trim();
+  const isEquipmentComplete = () => selectedItems.length > 0;
+  const isReviewComplete = () => selectedItems.length > 0 && quoteNumber;
+
+  const getStepStatus = (step: number) => {
+    switch (step) {
+      case 1:
+        if (currentStep > 1 && isClientComplete()) return 'completed';
+        if (currentStep === 1) return 'active';
+        return 'pending';
+      case 2:
+        if (currentStep > 2 && isEquipmentComplete()) return 'completed';
+        if (currentStep === 2) return 'active';
+        return isClientComplete() ? 'pending' : 'disabled';
+      case 3:
+        if (currentStep > 3 && isReviewComplete()) return 'completed';
+        if (currentStep === 3) return 'active';
+        return isEquipmentComplete() ? 'pending' : 'disabled';
+      case 4:
+        if (currentStep === 4) return 'active';
+        return isReviewComplete() ? 'pending' : 'disabled';
+      default:
+        return 'pending';
+    }
+  };
+
+  const handleStepClick = (targetStep: number) => {
+    // Allow navigation to completed steps or the next logical step
+    const canNavigate = targetStep <= currentStep + 1 && getStepStatus(targetStep) !== 'disabled';
+    if (canNavigate) {
+      setCurrentStep(targetStep);
+    }
+  };
+
+  // Auto-advance logic - effect to move to next step when current step completes
+  useEffect(() => {
+    if (currentStep === 1 && isClientComplete()) {
+      // Don't auto-advance from client step, let user choose
+    } else if (currentStep === 2 && isEquipmentComplete() && quoteNumber) {
+      // Don't auto-advance from equipment, let user review
+    }
+  }, [currentStep, isClientComplete, isEquipmentComplete, quoteNumber]);
+
+  // Section summary helpers
+  const getClientSummary = () => {
+    if (!isClientComplete()) return '';
+    return `${clientInfo.name}${clientInfo.email ? ` (${clientInfo.email})` : ''}`;
+  };
+
+  const getEquipmentSummary = () => {
+    if (selectedItems.length === 0) return '';
+    return `${selectedItems.length} item${selectedItems.length === 1 ? '' : 's'} selected`;
+  };
+
+  const getReviewSummary = () => {
+    if (!isReviewComplete()) return '';
+    return `Quote ${quoteNumber} - $${total.toFixed(2)} AUD`;
+  };
+
   const filteredEquipment = equipment
     .filter(item => {
       const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -365,6 +428,13 @@ const QuoteBuilder: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Step Progress Indicator */}
+      <StepIndicator
+        currentStep={currentStep}
+        onStepClick={handleStepClick}
+        getStepStatus={getStepStatus}
+      />
+
       {/* Draft Restore Banner */}
       {showDraftRestore && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -431,10 +501,17 @@ const QuoteBuilder: React.FC = () => {
         </div>
       </div>
       {/* Client Information */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Client Information</h2>
-          {savedClients.length > 0 && (
+      <CollapsibleSection
+        title="Client Information"
+        step={1}
+        currentStep={currentStep}
+        isCompleted={isClientComplete()}
+        completionSummary={getClientSummary()}
+        stepStatus={getStepStatus(1)}
+        onEdit={() => setCurrentStep(1)}
+      >
+        {savedClients.length > 0 && (
+          <div className="flex items-center justify-end mb-4">
             <button
               onClick={() => setShowClientSuggestions(!showClientSuggestions)}
               className="text-sm text-primary-600 hover:text-primary-700 flex items-center space-x-1"
@@ -444,8 +521,8 @@ const QuoteBuilder: React.FC = () => {
               </svg>
               <span>Recent Clients ({savedClients.length})</span>
             </button>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Client Suggestions */}
         {showClientSuggestions && savedClients.length > 0 && (
@@ -576,21 +653,31 @@ const QuoteBuilder: React.FC = () => {
             className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
         </div>
-      </div>
+      </CollapsibleSection>
 
-      {/* Bundle Selection */}
-      <div className="mb-6">
-        <BundleSelector
-          equipment={equipment}
-          onAddBundle={addBundleToQuote}
-          onPreviewBundle={handlePreviewBundle}
-        />
-      </div>
+      {/* Equipment & Bundle Selection */}
+      <CollapsibleSection
+        title="Equipment Selection"
+        step={2}
+        currentStep={currentStep}
+        isCompleted={isEquipmentComplete()}
+        completionSummary={getEquipmentSummary()}
+        stepStatus={getStepStatus(2)}
+        onEdit={() => setCurrentStep(2)}
+      >
+        {/* Bundle Selection */}
+        <div className="mb-6">
+          <BundleSelector
+            equipment={equipment}
+            onAddBundle={addBundleToQuote}
+            onPreviewBundle={handlePreviewBundle}
+          />
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Equipment Selection */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">Equipment Selection</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Individual Equipment Selection */}
+          <div className="bg-white p-4 rounded-lg border border-gray-200">
+            <h3 className="text-md font-semibold mb-4">Individual Equipment</h3>
 
           <div className="space-y-3 mb-4">
             <select
@@ -689,24 +776,32 @@ const QuoteBuilder: React.FC = () => {
             })}
           </div>
         </div>
+      </CollapsibleSection>
 
-        {/* Quote Summary */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Quote Summary</h2>
-            {quoteNumber && (
-              <div className="flex items-center space-x-2">
-                <label className="text-sm text-gray-600 font-medium">Quote #:</label>
-                <input
-                  type="text"
-                  value={quoteNumber}
-                  onChange={(e) => setQuoteNumber(e.target.value)}
-                  className="px-3 py-1 border border-gray-300 rounded text-sm font-mono"
-                  placeholder="QT-YYYYMMDD-XXX"
-                />
-              </div>
-            )}
-          </div>
+      {/* Quote Summary & Review */}
+      <CollapsibleSection
+        title="Quote Review"
+        step={3}
+        currentStep={currentStep}
+        isCompleted={isReviewComplete()}
+        completionSummary={getReviewSummary()}
+        stepStatus={getStepStatus(3)}
+        onEdit={() => setCurrentStep(3)}
+      >
+        <div className="mb-4 flex items-center justify-between">
+          {quoteNumber && (
+            <div className="flex items-center space-x-2">
+              <label className="text-sm text-gray-600 font-medium">Quote #:</label>
+              <input
+                type="text"
+                value={quoteNumber}
+                onChange={(e) => setQuoteNumber(e.target.value)}
+                className="px-3 py-1 border border-gray-300 rounded text-sm font-mono"
+                placeholder="QT-YYYYMMDD-XXX"
+              />
+            </div>
+          )}
+        </div>
 
           <div className="space-y-3 mb-4">
             {selectedItems.map((item, index) => (
@@ -787,7 +882,7 @@ const QuoteBuilder: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
+      </CollapsibleSection>
 
       {/* Bundle Preview Modal */}
       <BundlePreviewModal
