@@ -49,3 +49,21 @@ export interface Formulas {
   laborRate: number;
   overheads: number;
 }
+
+export interface BundleItem {
+  equipmentId: number;
+  quantity: number;
+  notes?: string;
+}
+
+export interface EquipmentBundle {
+  id: string;
+  name: string;
+  description: string;
+  category: 'residential' | 'commercial' | 'industrial' | 'specialty';
+  items: BundleItem[];
+  totalBasePrice: number;
+  isCustom: boolean;
+  createdAt: string;
+  usageCount: number;
+}

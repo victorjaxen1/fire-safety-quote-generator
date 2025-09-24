@@ -1,13 +1,40 @@
-import React, { useState } from 'react';
-import { Equipment, Formulas } from '../types';
+import React, { useState, useEffect } from 'react';
+import { Equipment, Formulas, EquipmentBundle } from '../types';
 import equipmentData from '../data/equipment.json';
 import formulasData from '../data/formulas.json';
+import bundlesData from '../data/bundles.json';
 
 const AdminPanel: React.FC = () => {
   const [equipment, setEquipment] = useState<Equipment[]>(equipmentData as Equipment[]);
   const [formulas, setFormulas] = useState<Formulas>(formulasData as Formulas);
+  const [bundles, setBundles] = useState<EquipmentBundle[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
+
+  // Load bundles on component mount
+  useEffect(() => {
+    const loadBundles = () => {
+      try {
+        const predefinedBundles = bundlesData as EquipmentBundle[];
+        const customBundlesStr = localStorage.getItem('customBundles');
+        const customBundles: EquipmentBundle[] = customBundlesStr ? JSON.parse(customBundlesStr) : [];
+        const usageStatsStr = localStorage.getItem('bundleUsageStats');
+        const usageStats: Record<string, number> = usageStatsStr ? JSON.parse(usageStatsStr) : {};
+
+        const allBundles = [...predefinedBundles, ...customBundles].map(bundle => ({
+          ...bundle,
+          usageCount: usageStats[bundle.id] || 0
+        }));
+
+        setBundles(allBundles);
+      } catch (error) {
+        console.error('Error loading bundles:', error);
+        setBundles([]);
+      }
+    };
+
+    loadBundles();
+  }, []);
 
   const filteredEquipment = equipment.filter(item =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -153,6 +180,90 @@ const AdminPanel: React.FC = () => {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Bundle Management */}
+      <div className="bg-white p-6 rounded-lg shadow">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">Bundle Management</h2>
+          <span className="text-sm text-gray-500">
+            {bundles.length} bundles available
+          </span>
+        </div>
+
+        <div className="space-y-4">
+          {bundles.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <p>No bundles found</p>
+            </div>
+          ) : (
+            bundles.map((bundle) => {
+              const bundlePrice = bundle.items.reduce((total, item) => {
+                const equipmentItem = equipment.find(e => e.id === item.equipmentId);
+                return total + (equipmentItem ? equipmentItem.basePrice * item.quantity * formulas.materialMarkup : 0);
+              }, 0);
+
+              return (
+                <div key={bundle.id} className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h3 className="font-medium text-gray-900">{bundle.name}</h3>
+                      <p className="text-sm text-gray-600">{bundle.description}</p>
+                      <div className="flex items-center gap-4 mt-1">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          bundle.category === 'residential' ? 'bg-green-100 text-green-800' :
+                          bundle.category === 'commercial' ? 'bg-blue-100 text-blue-800' :
+                          bundle.category === 'industrial' ? 'bg-orange-100 text-orange-800' :
+                          'bg-purple-100 text-purple-800'
+                        }`}>
+                          {bundle.category}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {bundle.items.length} items
+                        </span>
+                        {bundle.usageCount > 0 && (
+                          <span className="text-xs text-gray-500">
+                            Used {bundle.usageCount} times
+                          </span>
+                        )}
+                        {bundle.isCustom && (
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Custom
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-semibold text-gray-900">
+                        ${bundlePrice.toFixed(2)}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        + GST: ${(bundlePrice * formulas.gstRate).toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <div className="text-sm text-gray-600">
+                      <strong>Items:</strong>
+                      <div className="mt-1 space-y-1">
+                        {bundle.items.map((item, index) => {
+                          const equipmentItem = equipment.find(e => e.id === item.equipmentId);
+                          return (
+                            <div key={index} className="flex justify-between">
+                              <span>• {item.quantity}x {equipmentItem?.name || 'Unknown Item'}</span>
+                              <span>${equipmentItem ? (equipmentItem.basePrice * item.quantity * formulas.materialMarkup).toFixed(2) : '0'}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </div>

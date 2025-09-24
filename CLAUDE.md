@@ -10,9 +10,8 @@ This repository contains a **Fire Safety Quote Generator** - a modern React Type
 
 ### Development
 ```bash
-cd fire-quote-app
 npm install          # Install dependencies
-npm run dev         # Start development server (http://localhost:3000)
+npm run dev         # Start development server (http://localhost:5173)
 npm run build       # Build for production
 npm run preview     # Preview production build
 npm run lint        # Run TypeScript linting
@@ -40,7 +39,7 @@ npm run test:coverage  # Run tests with coverage report
 ### Deployment
 - **Live App**: https://github.com/victorjaxen1/fire-safety-quote-generator (deployed on Netlify)
 - **Auto-deployment**: Push to GitHub main branch triggers automatic Netlify rebuild
-- **Build Output**: `fire-quote-app/dist/` directory
+- **Build Output**: `dist/` directory
 
 ## Architecture
 
@@ -73,7 +72,6 @@ npm run test:coverage  # Run tests with coverage report
 
 ### Application Structure
 ```
-fire-quote-app/
 ├── src/
 │   ├── components/          # React components
 │   │   ├── QuoteBuilder.tsx # Main quote interface
@@ -82,13 +80,19 @@ fire-quote-app/
 │   │   ├── equipment.json  # Equipment catalog
 │   │   ├── formulas.json   # Pricing formulas
 │   │   └── categories.json # Equipment categories
+│   ├── test/               # Test configuration and utilities
+│   │   ├── setup.ts        # Test environment setup
+│   │   └── utils.tsx       # Test utilities and mocks
 │   ├── types/
 │   │   └── index.ts        # TypeScript definitions
 │   ├── utils/
 │   │   └── exportUtils.ts  # PDF/Excel/CSV exports
 │   ├── App.tsx             # Main app with routing
 │   └── main.tsx            # React app entry point
+├── index.html              # HTML template
 ├── netlify.toml            # Netlify deployment config
+├── vite.config.ts          # Vite build configuration
+├── tsconfig.json           # TypeScript configuration
 └── package.json            # Dependencies and scripts
 ```
 
@@ -151,9 +155,9 @@ interface Equipment {
 
 ### Common Build Issues
 - **TypeScript errors**: Ensure all imports are used, remove unused React imports
-- **Missing dependencies**: Run `npm install` in `fire-quote-app/` directory
+- **Missing dependencies**: Run `npm install` in root directory
 - **Netlify build fails**: Check build logs, verify Node.js version compatibility (requires Node 18+)
-- **Vite dev server issues**: Default port 3000, check for conflicts
+- **Vite dev server issues**: Default port 5173, check for conflicts
 - **ESLint warnings**: Use `npm run lint` to check TypeScript issues before building
 
 ### Export Problems

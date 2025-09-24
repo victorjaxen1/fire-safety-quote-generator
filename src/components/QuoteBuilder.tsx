@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { Equipment, QuoteItem, ClientInfo, Formulas, Category } from '../types';
+import { Equipment, QuoteItem, ClientInfo, Formulas, Category, EquipmentBundle } from '../types';
 import equipmentData from '../data/equipment.json';
 import categoriesData from '../data/categories.json';
 import formulasData from '../data/formulas.json';
 import { exportToPDF, exportToExcel, exportToCSV, generateQuoteNumber } from '../utils/exportUtils';
+import BundleSelector from './BundleSelector';
+import BundlePreviewModal from './BundlePreviewModal';
 
 const QuoteBuilder: React.FC = () => {
   const [equipment] = useState<Equipment[]>(equipmentData as Equipment[]);
@@ -19,6 +21,7 @@ const QuoteBuilder: React.FC = () => {
   const [savedClients, setSavedClients] = useState<(ClientInfo & { id: string; lastUsed: Date; useCount: number })[]>([]);
   const [showClientSuggestions, setShowClientSuggestions] = useState(false);
   const clientSuggestionsRef = useRef<HTMLDivElement>(null);
+  const [previewBundle, setPreviewBundle] = useState<EquipmentBundle | null>(null);
   const [clientInfo, setClientInfo] = useState<ClientInfo>({
     name: '',
     abn: '',
@@ -253,6 +256,24 @@ const QuoteBuilder: React.FC = () => {
       };
       setSelectedItems([...selectedItems, newItem]);
     }
+  };
+
+  const addBundleToQuote = (bundle: EquipmentBundle, customQuantities?: Record<number, number>) => {
+    bundle.items.forEach(bundleItem => {
+      const equipmentItem = equipment.find(e => e.id === bundleItem.equipmentId);
+      if (equipmentItem) {
+        const quantity = customQuantities?.[bundleItem.equipmentId] || bundleItem.quantity;
+
+        // Add each item to the quote with the specified quantity
+        for (let i = 0; i < quantity; i++) {
+          addItem(equipmentItem);
+        }
+      }
+    });
+  };
+
+  const handlePreviewBundle = (bundle: EquipmentBundle) => {
+    setPreviewBundle(bundle);
   };
 
   const updateQuantity = (index: number, quantity: number) => {
@@ -501,6 +522,15 @@ const QuoteBuilder: React.FC = () => {
         </div>
       </div>
 
+      {/* Bundle Selection */}
+      <div className="mb-6">
+        <BundleSelector
+          equipment={equipment}
+          onAddBundle={addBundleToQuote}
+          onPreviewBundle={handlePreviewBundle}
+        />
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Equipment Selection */}
         <div className="bg-white p-6 rounded-lg shadow">
@@ -688,6 +718,15 @@ const QuoteBuilder: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Bundle Preview Modal */}
+      <BundlePreviewModal
+        bundle={previewBundle}
+        equipment={equipment}
+        isOpen={previewBundle !== null}
+        onClose={() => setPreviewBundle(null)}
+        onAddBundle={addBundleToQuote}
+      />
     </div>
   );
 };

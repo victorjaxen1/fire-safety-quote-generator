@@ -1,0 +1,239 @@
+[
+  {
+    "id": "residential-basic",
+    "name": "Basic Residential Smoke Detection",
+    "description": "Essential smoke detection system for homes and small apartments",
+    "category": "residential",
+    "items": [
+      {
+        "equipmentId": 15,
+        "quantity": 4,
+        "notes": "One per bedroom + living areas"
+      },
+      {
+        "equipmentId": 18,
+        "quantity": 4,
+        "notes": "Detector mounting bases"
+      },
+      {
+        "equipmentId": 48,
+        "quantity": 50,
+        "notes": "Installation wiring - estimated run"
+      }
+    ],
+    "totalBasePrice": 0,
+    "isCustom": false,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "usageCount": 0
+  },
+  {
+    "id": "commercial-small-office",
+    "name": "Small Office Fire System",
+    "description": "Complete fire detection system for small office spaces (up to 500sqm)",
+    "category": "commercial",
+    "items": [
+      {
+        "equipmentId": 1,
+        "quantity": 1,
+        "notes": "Main fire control panel"
+      },
+      {
+        "equipmentId": 15,
+        "quantity": 6,
+        "notes": "Smoke detectors for office areas"
+      },
+      {
+        "equipmentId": 17,
+        "quantity": 2,
+        "notes": "Heat detectors for kitchen/utility"
+      },
+      {
+        "equipmentId": 6,
+        "quantity": 2,
+        "notes": "Manual call points at exits"
+      },
+      {
+        "equipmentId": 16,
+        "quantity": 3,
+        "notes": "Audio/visual alarm devices"
+      },
+      {
+        "equipmentId": 48,
+        "quantity": 150,
+        "notes": "Fire rated cabling throughout"
+      }
+    ],
+    "totalBasePrice": 0,
+    "isCustom": false,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "usageCount": 0
+  },
+  {
+    "id": "residential-kitchen-suppression",
+    "name": "Kitchen Hood Suppression System",
+    "description": "Automatic fire suppression system for residential kitchen ranges",
+    "category": "residential",
+    "items": [
+      {
+        "equipmentId": 17,
+        "quantity": 2,
+        "notes": "Heat detectors above cooking area"
+      },
+      {
+        "equipmentId": 6,
+        "quantity": 1,
+        "notes": "Manual activation point"
+      },
+      {
+        "equipmentId": 45,
+        "quantity": 1,
+        "notes": "Gas shut-off valve"
+      },
+      {
+        "equipmentId": 48,
+        "quantity": 25,
+        "notes": "Control wiring"
+      }
+    ],
+    "totalBasePrice": 0,
+    "isCustom": false,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "usageCount": 0
+  },
+  {
+    "id": "commercial-retail",
+    "name": "Retail Store Fire System",
+    "description": "Comprehensive fire safety system for retail environments",
+    "category": "commercial",
+    "items": [
+      {
+        "equipmentId": 1,
+        "quantity": 1,
+        "notes": "Fire indicator panel"
+      },
+      {
+        "equipmentId": 15,
+        "quantity": 10,
+        "notes": "Smoke detectors - sales floor"
+      },
+      {
+        "equipmentId": 17,
+        "quantity": 4,
+        "notes": "Heat detectors - storage areas"
+      },
+      {
+        "equipmentId": 6,
+        "quantity": 4,
+        "notes": "Manual call points at exits"
+      },
+      {
+        "equipmentId": 16,
+        "quantity": 6,
+        "notes": "Sounder/strobe devices"
+      },
+      {
+        "equipmentId": 14,
+        "quantity": 2,
+        "notes": "Backup batteries"
+      },
+      {
+        "equipmentId": 48,
+        "quantity": 200,
+        "notes": "Fire rated cabling system"
+      }
+    ],
+    "totalBasePrice": 0,
+    "isCustom": false,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "usageCount": 0
+  },
+  {
+    "id": "industrial-warehouse",
+    "name": "Warehouse Fire Detection",
+    "description": "Industrial fire detection system for warehouse and storage facilities",
+    "category": "industrial",
+    "items": [
+      {
+        "equipmentId": 1,
+        "quantity": 1,
+        "notes": "Main fire panel"
+      },
+      {
+        "equipmentId": 2,
+        "quantity": 1,
+        "notes": "Occupant warning system panel"
+      },
+      {
+        "equipmentId": 17,
+        "quantity": 20,
+        "notes": "Heat detectors - high ceiling areas"
+      },
+      {
+        "equipmentId": 15,
+        "quantity": 8,
+        "notes": "Smoke detectors - office areas"
+      },
+      {
+        "equipmentId": 6,
+        "quantity": 6,
+        "notes": "Manual call points"
+      },
+      {
+        "equipmentId": 16,
+        "quantity": 12,
+        "notes": "High-output sounders"
+      },
+      {
+        "equipmentId": 48,
+        "quantity": 500,
+        "notes": "Extensive cable runs"
+      }
+    ],
+    "totalBasePrice": 0,
+    "isCustom": false,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "usageCount": 0
+  },
+  {
+    "id": "specialty-server-room",
+    "name": "Server Room Fire Protection",
+    "description": "Specialized fire detection for IT environments and server rooms",
+    "category": "specialty",
+    "items": [
+      {
+        "equipmentId": 15,
+        "quantity": 4,
+        "notes": "High-sensitivity smoke detectors"
+      },
+      {
+        "equipmentId": 17,
+        "quantity": 2,
+        "notes": "Heat detectors for equipment areas"
+      },
+      {
+        "equipmentId": 6,
+        "quantity": 2,
+        "notes": "Manual call points at exits"
+      },
+      {
+        "equipmentId": 16,
+        "quantity": 2,
+        "notes": "Audio/visual alarms"
+      },
+      {
+        "equipmentId": 14,
+        "quantity": 2,
+        "notes": "Backup power supply"
+      },
+      {
+        "equipmentId": 48,
+        "quantity": 75,
+        "notes": "Specialized fire-rated cabling"
+      }
+    ],
+    "totalBasePrice": 0,
+    "isCustom": false,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "usageCount": 0
+  }
+]
