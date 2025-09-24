@@ -211,58 +211,173 @@ export const exportToPDF = (
   doc.text('TOTAL:', pageWidth - 95, yPosition);
   doc.text(`$${total.toFixed(2)}`, pageWidth - 25, yPosition, { align: 'right' });
 
-  // TERMS & CONDITIONS SECTION
-  yPosition = pageHeight - 70;
+  // ADD NEW PAGE FOR TERMS & CONDITIONS
+  doc.addPage();
+  yPosition = margins.top + 10;
 
-  doc.setFillColor(55, 65, 81);
+  // TERMS & CONDITIONS HEADER - Full width branded header
+  doc.setFillColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
+  doc.rect(0, 0, pageWidth, 35, 'F');
+
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(10);
+  doc.setFontSize(24);
   doc.setFont(undefined, 'bold');
-  doc.rect(margins.left, yPosition - 3, pageWidth - margins.left - margins.right, 6, 'F');
-  doc.text('TERMS & CONDITIONS', margins.left + 3, yPosition);
+  doc.text('TERMS & CONDITIONS', pageWidth / 2, 25, { align: 'center' });
 
-  yPosition += 8;
+  yPosition = 45;
+
+  // Company name and quote reference on terms page
   doc.setTextColor(0, 0, 0);
-  doc.setFontSize(8);
+  doc.setFontSize(12);
+  doc.setFont(undefined, 'bold');
+  if (companySettings?.isConfigured) {
+    doc.text(companySettings.companyName, margins.left, yPosition);
+  } else {
+    doc.text('[COMPANY NAME]', margins.left, yPosition);
+  }
+
+  doc.setFontSize(10);
   doc.setFont(undefined, 'normal');
+  doc.text(`Quote: ${quoteNumber}`, pageWidth - margins.right, yPosition, { align: 'right' });
+
+  yPosition += 15;
 
   if (companySettings?.isConfigured) {
-    // Format terms & conditions in columns for better readability
+    // Full terms & conditions text with proper formatting
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+
     const termsLines = companySettings.termsAndConditions
       .split('\n')
-      .filter(line => line.trim())
-      .slice(0, 6); // Limit to prevent overflow
+      .filter(line => line.trim());
 
-    const columnWidth = (pageWidth - margins.left - margins.right) / 2 - 10;
-    const leftColumn = termsLines.slice(0, 3);
-    const rightColumn = termsLines.slice(3, 6);
+    const pageContentWidth = pageWidth - margins.left - margins.right;
 
-    leftColumn.forEach((line, index) => {
-      const wrappedText = doc.splitTextToSize(line, columnWidth);
-      wrappedText.forEach((wrappedLine: string, lineIndex: number) => {
-        doc.text(wrappedLine, margins.left + 3, yPosition + (index * 6) + (lineIndex * 3));
-      });
+    termsLines.forEach((line) => {
+      if (yPosition > pageHeight - 40) {
+        doc.addPage();
+        yPosition = margins.top + 10;
+      }
+
+      if (line.match(/^\d+\./)) {
+        // Numbered terms - make them bold and add extra spacing
+        yPosition += 3;
+        doc.setFont(undefined, 'bold');
+        const wrappedText = doc.splitTextToSize(line, pageContentWidth);
+        wrappedText.forEach((wrappedLine: string) => {
+          doc.text(wrappedLine, margins.left, yPosition);
+          yPosition += 5;
+        });
+        doc.setFont(undefined, 'normal');
+        yPosition += 2;
+      } else if (line.toUpperCase() === line && line.length > 10) {
+        // Section headers (all caps) - make bold and centered
+        yPosition += 5;
+        doc.setFont(undefined, 'bold');
+        doc.text(line, pageWidth / 2, yPosition, { align: 'center' });
+        yPosition += 8;
+        doc.setFont(undefined, 'normal');
+      } else if (line.trim()) {
+        // Regular text
+        const wrappedText = doc.splitTextToSize(line, pageContentWidth);
+        wrappedText.forEach((wrappedLine: string) => {
+          doc.text(wrappedLine, margins.left, yPosition);
+          yPosition += 4;
+        });
+        yPosition += 1;
+      } else {
+        // Empty line for spacing
+        yPosition += 4;
+      }
     });
 
-    rightColumn.forEach((line, index) => {
-      const wrappedText = doc.splitTextToSize(line, columnWidth);
-      wrappedText.forEach((wrappedLine: string, lineIndex: number) => {
-        doc.text(wrappedLine, pageWidth / 2 + 10, yPosition + (index * 6) + (lineIndex * 3));
-      });
-    });
+    // Payment Terms and Footer Section
+    yPosition += 15;
 
-    // Payment terms and footer
-    yPosition += 20;
+    // Payment terms box
+    doc.setFillColor(243, 244, 246);
+    doc.rect(margins.left, yPosition - 5, pageContentWidth, 25, 'F');
+    doc.setDrawColor(55, 65, 81);
+    doc.rect(margins.left, yPosition - 5, pageContentWidth, 25);
+
     doc.setFont(undefined, 'bold');
-    doc.text(`Payment Terms: ${companySettings.paymentTerms}`, margins.left + 3, yPosition);
+    doc.setFontSize(12);
+    doc.text('PAYMENT TERMS', margins.left + 10, yPosition + 2);
 
-    yPosition += 4;
-    doc.setFont(undefined, 'italic');
-    doc.text(companySettings.footerText, margins.left + 3, yPosition);
+    doc.setFont(undefined, 'normal');
+    doc.setFontSize(11);
+    doc.text(companySettings.paymentTerms, margins.left + 10, yPosition + 8);
+
+    yPosition += 30;
+
+    // Footer message
+    if (companySettings.footerText) {
+      doc.setFont(undefined, 'italic');
+      doc.setFontSize(12);
+      doc.text(companySettings.footerText, pageWidth / 2, yPosition, { align: 'center' });
+    }
+
+    // Add contact information at bottom
+    yPosition = pageHeight - 30;
+    doc.setFont(undefined, 'normal');
+    doc.setFontSize(9);
+    doc.text('Questions about these terms?', margins.left, yPosition);
+    doc.text(`Contact: ${companySettings.phone} | ${companySettings.email}`, margins.left, yPosition + 5);
+
   } else {
-    doc.text('Configure terms & conditions in Admin Panel → Company Settings', margins.left + 3, yPosition);
-    yPosition += 4;
-    doc.text(`This quote is valid for ${validityDays} days from the date of issue.`, margins.left + 3, yPosition);
+    // Default terms when not configured
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+
+    const defaultTerms = [
+      '',
+      'STANDARD TERMS & CONDITIONS',
+      '',
+      '1. Payment is due within 30 days of invoice date unless otherwise agreed in writing.',
+      '',
+      '2. All work will be carried out in accordance with relevant Australian Standards and Building Codes.',
+      '',
+      '3. This quotation is valid for 30 days from the date shown above.',
+      '',
+      '4. Prices include GST where applicable.',
+      '',
+      '5. Any variations to the scope of work may incur additional charges.',
+      '',
+      '6. Installation work requires safe access to all areas. Additional charges may apply for difficult access.',
+      '',
+      '7. Client is responsible for obtaining any required permits or approvals.',
+      '',
+      '8. Equipment warranty as per manufacturer specifications.',
+      '',
+      '',
+      'Please configure your company settings in the Admin Panel to customize these terms.'
+    ];
+
+    defaultTerms.forEach((line) => {
+      if (line.toUpperCase() === line && line.length > 10) {
+        doc.setFont(undefined, 'bold');
+        doc.text(line, pageWidth / 2, yPosition, { align: 'center' });
+        yPosition += 8;
+        doc.setFont(undefined, 'normal');
+      } else if (line.match(/^\d+\./)) {
+        doc.setFont(undefined, 'bold');
+        const wrappedText = doc.splitTextToSize(line, pageWidth - margins.left - margins.right);
+        wrappedText.forEach((wrappedLine: string) => {
+          doc.text(wrappedLine, margins.left, yPosition);
+          yPosition += 5;
+        });
+        doc.setFont(undefined, 'normal');
+        yPosition += 2;
+      } else if (line.trim()) {
+        const wrappedText = doc.splitTextToSize(line, pageWidth - margins.left - margins.right);
+        wrappedText.forEach((wrappedLine: string) => {
+          doc.text(wrappedLine, margins.left, yPosition);
+          yPosition += 4;
+        });
+      } else {
+        yPosition += 4;
+      }
+    });
   }
 
   doc.save(`Quote-${quoteNumber}.pdf`);
