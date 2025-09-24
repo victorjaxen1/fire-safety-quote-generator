@@ -8,6 +8,11 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    rollupOptions: {
+      external: (id) => {
+        return id.includes('.test.') || id.includes('/test/');
+      }
+    }
   },
   test: {
     globals: true,

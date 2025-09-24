@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '../test/utils'
+import { render, screen, fireEvent } from '../test/utils'
 import { mockEquipment, mockCategories, mockFormulas } from '../test/utils'
 import QuoteBuilder from './QuoteBuilder'
 
