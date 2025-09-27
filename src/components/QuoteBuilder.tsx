@@ -331,6 +331,11 @@ const QuoteBuilder: React.FC = () => {
     console.log('clientInfo state changed:', clientInfo);
   }, [clientInfo]);
 
+  // Debug: Monitor showClientSuggestions state changes
+  useEffect(() => {
+    console.log('showClientSuggestions state changed:', showClientSuggestions);
+  }, [showClientSuggestions]);
+
   // Auto-advance logic - streamlined for 3-step flow
   useEffect(() => {
     // No auto-advance needed - users control flow with contextual actions
@@ -864,8 +869,13 @@ const QuoteBuilder: React.FC = () => {
                 const newValue = e.target.value;
                 setClientInfo({...clientInfo, name: newValue});
                 // Auto-show suggestions when typing
+                console.log('onChange:', { newValue, length: newValue.length, savedClientsCount: savedClients.length, shouldShow: newValue.length >= 2 && savedClients.length > 0 });
                 if (newValue.length >= 2 && savedClients.length > 0) {
+                  console.log('Setting showClientSuggestions to TRUE');
                   setShowClientSuggestions(true);
+                } else {
+                  console.log('Setting showClientSuggestions to FALSE');
+                  setShowClientSuggestions(false);
                 }
               }}
               onFocus={() => {
