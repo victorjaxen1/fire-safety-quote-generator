@@ -827,7 +827,12 @@ const QuoteBuilder: React.FC = () => {
               {savedClients.slice(0, 10).map((client) => (
                 <button
                   key={client.id}
-                  onClick={() => fillClientForm(client)}
+                  onClick={(e) => {
+                    console.log('Client button clicked!', client.name); // Debug: Click registered
+                    e.preventDefault();
+                    e.stopPropagation();
+                    fillClientForm(client);
+                  }}
                   className="w-full text-left p-2 hover:bg-white border border-transparent hover:border-gray-200 rounded text-sm"
                 >
                   <div className="font-medium">{client.name}</div>
@@ -871,7 +876,12 @@ const QuoteBuilder: React.FC = () => {
                 {getClientSuggestions(clientInfo.name).map((client) => (
                   <button
                     key={client.id}
-                    onClick={() => fillClientForm(client)}
+                    onClick={(e) => {
+                      console.log('Live search client clicked!', client.name); // Debug: Live search click
+                      e.preventDefault();
+                      e.stopPropagation();
+                      fillClientForm(client);
+                    }}
                     className="w-full text-left p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
                   >
                     <div className="font-medium text-sm">{client.name}</div>
