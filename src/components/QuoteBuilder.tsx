@@ -271,11 +271,17 @@ const QuoteBuilder: React.FC = () => {
   };
 
   const getClientSuggestions = (searchTerm: string) => {
+    console.log('getClientSuggestions called with:', searchTerm, 'savedClients:', savedClients.length);
     if (searchTerm.length < 2) return [];
-    return savedClients
-      .filter(client =>
-        client.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+
+    const filtered = savedClients.filter(client => {
+      const match = client.name.toLowerCase().includes(searchTerm.toLowerCase());
+      console.log(`Checking "${client.name}" vs "${searchTerm}": ${match}`);
+      return match;
+    });
+
+    console.log('Filtered suggestions:', filtered);
+    return filtered
       .sort((a, b) => b.useCount - a.useCount)
       .slice(0, 5);
   };
@@ -871,7 +877,16 @@ const QuoteBuilder: React.FC = () => {
             />
 
             {/* Live suggestions dropdown */}
-            {showClientSuggestions && clientInfo.name.length >= 2 && (
+            {(() => {
+              const suggestions = getClientSuggestions(clientInfo.name);
+              console.log('Dropdown condition check:', {
+                showClientSuggestions,
+                nameLength: clientInfo.name.length,
+                suggestionsCount: suggestions.length,
+                shouldShow: showClientSuggestions && clientInfo.name.length >= 2 && suggestions.length > 0
+              });
+              return showClientSuggestions && clientInfo.name.length >= 2 && suggestions.length > 0;
+            })() && (
               <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
                 {getClientSuggestions(clientInfo.name).map((client) => (
                   <button
