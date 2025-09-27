@@ -245,6 +245,8 @@ const QuoteBuilder: React.FC = () => {
   };
 
   const fillClientForm = (client: ClientInfo & { id?: string; lastUsed?: Date; useCount?: number }) => {
+    console.log('fillClientForm called with:', client); // Debug: incoming data
+
     // Extract only ClientInfo properties, excluding tracking metadata
     const clientInfoOnly: ClientInfo = {
       name: client.name || '',
@@ -258,10 +260,14 @@ const QuoteBuilder: React.FC = () => {
       phone: client.phone || ''
     };
 
-    console.log('Filling client form with:', clientInfoOnly); // Debug log
+    console.log('Setting clientInfo to:', clientInfoOnly); // Debug: what we're setting
+    console.log('Current clientInfo before update:', clientInfo); // Debug: current state
+
     setClientInfo(clientInfoOnly);
     setShowClientSuggestions(false);
-    saveClient(clientInfoOnly); // Update use count and last used
+
+    // Don't call saveClient here to avoid recursion - the client is already saved
+    // saveClient(clientInfoOnly); // Remove this to prevent potential issues
   };
 
   const getClientSuggestions = (searchTerm: string) => {
@@ -313,6 +319,11 @@ const QuoteBuilder: React.FC = () => {
       setCurrentStep(targetStep);
     }
   };
+
+  // Debug: Monitor clientInfo state changes
+  useEffect(() => {
+    console.log('clientInfo state changed:', clientInfo);
+  }, [clientInfo]);
 
   // Auto-advance logic - streamlined for 3-step flow
   useEffect(() => {
