@@ -836,15 +836,23 @@ const QuoteBuilder: React.FC = () => {
             <h3 className="text-sm font-medium text-gray-700 mb-2">Recent Clients</h3>
             <div className="space-y-2 max-h-40 overflow-y-auto">
               {savedClients.slice(0, 10).map((client) => (
-                <button
+                <div
                   key={client.id}
                   onClick={(e) => {
-                    console.log('Client button clicked!', client.name); // Debug: Click registered
+                    console.log('Recent Client clicked!', client.name);
                     e.preventDefault();
                     e.stopPropagation();
                     fillClientForm(client);
                   }}
-                  className="w-full text-left p-2 hover:bg-white border border-transparent hover:border-gray-200 rounded text-sm"
+                  className="w-full text-left p-2 hover:bg-white border border-transparent hover:border-gray-200 rounded text-sm cursor-pointer"
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      fillClientForm(client);
+                    }
+                  }}
                 >
                   <div className="font-medium">{client.name}</div>
                   <div className="text-gray-500 text-xs">
@@ -853,7 +861,7 @@ const QuoteBuilder: React.FC = () => {
                   <div className="text-gray-400 text-xs">
                     Used {client.useCount} times • Last: {client.lastUsed.toLocaleDateString()}
                   </div>
-                </button>
+                </div>
               ))}
             </div>
           </div>
