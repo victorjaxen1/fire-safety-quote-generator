@@ -8,9 +8,8 @@ interface StepIndicatorProps {
 
 const steps = [
   { number: 1, label: 'Client Info', icon: 'user' },
-  { number: 2, label: 'Equipment', icon: 'wrench' },
-  { number: 3, label: 'Review', icon: 'document' },
-  { number: 4, label: 'Export', icon: 'download' }
+  { number: 2, label: 'Equipment & Export', icon: 'wrench' },
+  { number: 3, label: 'Complete', icon: 'download' }
 ];
 
 const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, onStepClick, getStepStatus }) => {

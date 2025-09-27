@@ -270,10 +270,9 @@ const QuoteBuilder: React.FC = () => {
     });
   };
 
-  // Step completion logic
+  // Step completion logic - Streamlined 3-step flow
   const isClientComplete = () => clientInfo.name.trim() && clientInfo.email.trim();
   const isEquipmentComplete = () => selectedItems.length > 0;
-  const isReviewComplete = () => selectedItems.length > 0 && quoteNumber;
 
   const getStepStatus = (step: number) => {
     switch (step) {
@@ -286,32 +285,27 @@ const QuoteBuilder: React.FC = () => {
         if (currentStep === 2) return 'active';
         return isClientComplete() ? 'pending' : 'disabled';
       case 3:
-        if (currentStep > 3 && isReviewComplete()) return 'completed';
         if (currentStep === 3) return 'active';
         return isEquipmentComplete() ? 'pending' : 'disabled';
-      case 4:
-        if (currentStep === 4) return 'active';
-        return isReviewComplete() ? 'pending' : 'disabled';
       default:
         return 'pending';
     }
   };
 
   const handleStepClick = (targetStep: number) => {
-    // Allow navigation to completed steps or the next logical step
-    const canNavigate = targetStep <= currentStep + 1 && getStepStatus(targetStep) !== 'disabled';
+    // Allow navigation to completed steps or the next logical step (max 3 steps)
+    const canNavigate = targetStep <= 3 && targetStep <= currentStep + 1 && getStepStatus(targetStep) !== 'disabled';
     if (canNavigate) {
       setCurrentStep(targetStep);
     }
   };
 
-  // Auto-advance logic - effect to move to next step when current step completes
+  // Auto-advance logic - streamlined for 3-step flow
   useEffect(() => {
-    if (currentStep === 1 && isClientComplete()) {
-      // Don't auto-advance from client step, let user choose
-    } else if (currentStep === 2 && isEquipmentComplete() && quoteNumber) {
-      // Don't auto-advance from equipment, let user review
-    }
+    // No auto-advance needed - users control flow with contextual actions
+    // Step 1: Client completes → manual advance to Step 2
+    // Step 2: Equipment + Export → manual export advances to Step 3
+    // Step 3: Export complete → manual actions to continue
   }, [currentStep, isClientComplete, isEquipmentComplete, quoteNumber]);
 
   // Section summary helpers
@@ -325,10 +319,6 @@ const QuoteBuilder: React.FC = () => {
     return `${selectedItems.length} item${selectedItems.length === 1 ? '' : 's'} selected`;
   };
 
-  const getReviewSummary = () => {
-    if (!isReviewComplete()) return '';
-    return `Quote ${quoteNumber} - $${total.toFixed(2)} AUD`;
-  };
 
   // Contextual Actions System
   const getContextualActions = () => {
@@ -351,50 +341,32 @@ const QuoteBuilder: React.FC = () => {
           }
         ];
 
-      case 2: // Equipment Step
-        return [
-          {
-            label: selectedItems.length > 0 ? 'Review Quote' : 'Select Equipment First',
-            onClick: () => selectedItems.length > 0 ? setCurrentStep(3) : null,
-            variant: 'primary' as const,
-            disabled: selectedItems.length === 0,
-            icon: 'document'
-          },
-          {
-            label: 'Back to Client',
-            onClick: () => setCurrentStep(1),
-            variant: 'secondary' as const,
-            disabled: false,
-            icon: 'arrow-left'
-          }
-        ];
-
-      case 3: // Review Step
+      case 2: // Equipment Selection with Live Sidebar
         return [
           {
             label: isExporting && exportingType === 'PDF' ? 'Exporting PDF...' : 'Export PDF',
             onClick: async () => {
-              if (isExporting) return;
+              if (isExporting || selectedItems.length === 0) return;
               setIsExporting(true);
               setExportingType('PDF');
               saveClient(clientInfo);
               await new Promise(resolve => setTimeout(resolve, 500)); // Simulate processing
               handleExportPDF();
               clearDraft();
-              setCurrentStep(4);
+              setCurrentStep(3);
               setTimeout(() => {
                 setIsExporting(false);
                 setExportingType('');
               }, 1000);
             },
             variant: 'primary' as const,
-            disabled: !isReviewComplete() || isExporting,
+            disabled: selectedItems.length === 0 || isExporting,
             icon: isExporting && exportingType === 'PDF' ? 'loading' : 'download'
           },
           {
             label: isExporting && exportingType === 'Excel' ? 'Exporting Excel...' : 'Export Excel',
             onClick: async () => {
-              if (isExporting) return;
+              if (isExporting || selectedItems.length === 0) return;
               setIsExporting(true);
               setExportingType('Excel');
               saveClient(clientInfo);
@@ -407,19 +379,19 @@ const QuoteBuilder: React.FC = () => {
               }, 1000);
             },
             variant: 'secondary' as const,
-            disabled: !isReviewComplete() || isExporting,
+            disabled: selectedItems.length === 0 || isExporting,
             icon: isExporting && exportingType === 'Excel' ? 'loading' : 'document'
           },
           {
-            label: 'Add More Items',
-            onClick: () => setCurrentStep(2),
+            label: 'Back to Client',
+            onClick: () => setCurrentStep(1),
             variant: 'tertiary' as const,
             disabled: false,
-            icon: 'plus'
+            icon: 'arrow-left'
           }
         ];
 
-      case 4: // Export Complete
+      case 3: // Export Complete Step
         return [
           {
             label: 'Start New Quote',
@@ -433,10 +405,17 @@ const QuoteBuilder: React.FC = () => {
           },
           {
             label: 'Export Again',
-            onClick: () => setCurrentStep(3),
+            onClick: () => setCurrentStep(2),
             variant: 'secondary' as const,
             disabled: false,
             icon: 'refresh'
+          },
+          {
+            label: 'Add More Items',
+            onClick: () => setCurrentStep(2),
+            variant: 'tertiary' as const,
+            disabled: false,
+            icon: 'plus'
           }
         ];
 
@@ -700,15 +679,13 @@ const QuoteBuilder: React.FC = () => {
             <div>
               <h3 className="font-medium text-gray-900">
                 {currentStep === 1 && 'Complete Client Information'}
-                {currentStep === 2 && 'Select Equipment & Bundles'}
-                {currentStep === 3 && 'Review & Export Quote'}
-                {currentStep === 4 && 'Quote Complete!'}
+                {currentStep === 2 && 'Select Equipment & Export Quote'}
+                {currentStep === 3 && 'Quote Complete!'}
               </h3>
               <p className="text-sm text-gray-600">
                 {currentStep === 1 && 'Fill in your client details to continue'}
-                {currentStep === 2 && 'Add equipment items or choose pre-configured bundles'}
-                {currentStep === 3 && 'Review your quote and export to PDF or Excel'}
-                {currentStep === 4 && 'Your quote has been exported successfully'}
+                {currentStep === 2 && 'Add equipment items and export when ready - see live preview in sidebar'}
+                {currentStep === 3 && 'Your quote has been exported successfully'}
               </p>
             </div>
           </div>
@@ -1075,94 +1052,6 @@ const QuoteBuilder: React.FC = () => {
       </div>
       </CollapsibleSection>
 
-      {/* Quote Summary & Review */}
-      <CollapsibleSection
-        title="Quote Review"
-        step={3}
-        currentStep={currentStep}
-        isCompleted={isReviewComplete()}
-        completionSummary={getReviewSummary()}
-        stepStatus={getStepStatus(3)}
-        onEdit={() => setCurrentStep(3)}
-      >
-        <div className="mb-4 flex items-center justify-between">
-          {quoteNumber && (
-            <div className="flex items-center space-x-2">
-              <label className="text-sm text-gray-600 font-medium">Quote #:</label>
-              <input
-                type="text"
-                value={quoteNumber}
-                onChange={(e) => setQuoteNumber(e.target.value)}
-                className="px-3 py-1 border border-gray-300 rounded text-sm font-mono"
-                placeholder="QT-YYYYMMDD-XXX"
-              />
-            </div>
-          )}
-        </div>
-
-          <div className="space-y-3 mb-4">
-            {selectedItems.length === 0 ? (
-              <EmptyState
-                icon="clipboard"
-                title="No Equipment Selected"
-                description="Add equipment items or bundles to start building your quote. You can go back to the equipment selection step."
-                actions={[
-                  {
-                    label: "Select Equipment",
-                    onClick: () => setCurrentStep(2),
-                    variant: 'primary'
-                  }
-                ]}
-              />
-            ) : (
-              selectedItems.map((item, index) => (
-                <div key={item.equipment.id} className="flex items-center justify-between p-2 border border-gray-200 rounded">
-                <div className="flex-1">
-                  <h4 className="font-medium text-sm">{item.equipment.name}</h4>
-                  <p className="text-xs text-gray-500">${item.unitPrice.toFixed(2)} per {item.equipment.unit}</p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="number"
-                    min="1"
-                    value={item.quantity}
-                    onChange={(e) => updateQuantity(index, parseInt(e.target.value) || 1)}
-                    className="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm"
-                  />
-                  <span className="font-semibold text-sm w-20 text-right">
-                    ${item.totalPrice.toFixed(2)}
-                  </span>
-                  <button
-                    onClick={() => updateQuantity(index, 0)}
-                    className="text-red-500 hover:text-red-700 text-sm"
-                  >
-                    ×
-                  </button>
-                </div>
-              </div>
-              ))
-            )}
-          </div>
-
-          {selectedItems.length > 0 && (
-            <div className="border-t pt-4 space-y-2">
-              <div className="flex justify-between">
-                <span>Subtotal:</span>
-                <span className="font-semibold">${subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>GST (10%):</span>
-                <span className="font-semibold">${gstAmount.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between items-center bg-green-50 border border-green-200 rounded-lg p-4 mt-3">
-                <span className="text-xl font-bold text-gray-800">Total (AUD):</span>
-                <span className="text-3xl font-bold text-green-700">${total.toFixed(2)}</span>
-              </div>
-
-              {/* Export actions now handled by contextual actions bar */}
-            </div>
-          )}
-      </CollapsibleSection>
 
       {/* Bundle Preview Modal */}
       <BundlePreviewModal
