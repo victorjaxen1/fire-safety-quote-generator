@@ -9,6 +9,7 @@ import BundlePreviewModal from './BundlePreviewModal';
 import StepIndicator from './StepIndicator';
 import CollapsibleSection from './CollapsibleSection';
 import EmptyState from './EmptyState';
+import { QuotePreviewSidebar } from './QuotePreviewSidebar';
 
 const QuoteBuilder: React.FC = () => {
   const [equipment] = useState<Equipment[]>(equipmentData as Equipment[]);
@@ -30,6 +31,8 @@ const QuoteBuilder: React.FC = () => {
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [exportingType, setExportingType] = useState<string>('');
   const [companySettings, setCompanySettings] = useState<CompanySettings>({} as CompanySettings);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
   const [clientInfo, setClientInfo] = useState<ClientInfo>({
     name: '',
     abn: '',
@@ -75,6 +78,24 @@ const QuoteBuilder: React.FC = () => {
 
     loadCompanySettings();
   }, []);
+
+  // Auto-show/hide sidebar when items change
+  useEffect(() => {
+    if (selectedItems.length > 0 && !showSidebar) {
+      setShowSidebar(true);
+      setSidebarExpanded(true);
+    } else if (selectedItems.length === 0) {
+      setShowSidebar(false);
+      setSidebarExpanded(false);
+    }
+  }, [selectedItems.length, showSidebar]);
+
+  // Auto-expand sidebar during equipment selection step
+  useEffect(() => {
+    if (currentStep === 2 && selectedItems.length > 0) {
+      setSidebarExpanded(true);
+    }
+  }, [currentStep, selectedItems.length]);
 
   // Load saved clients on component mount
   useEffect(() => {
@@ -607,6 +628,27 @@ const QuoteBuilder: React.FC = () => {
     setSelectedItems(updated);
   };
 
+  // Sidebar-specific quantity update function
+  const updateQuantityById = (equipmentId: number, quantity: number) => {
+    const index = selectedItems.findIndex(item => item.equipment.id === equipmentId);
+    if (index >= 0) {
+      updateQuantity(index, quantity);
+    }
+  };
+
+  // Sidebar-specific remove function
+  const removeItemById = (equipmentId: number) => {
+    const index = selectedItems.findIndex(item => item.equipment.id === equipmentId);
+    if (index >= 0) {
+      updateQuantity(index, 0);
+    }
+  };
+
+  // Toggle sidebar expansion
+  const toggleSidebar = () => {
+    setSidebarExpanded(!sidebarExpanded);
+  };
+
   const subtotal = selectedItems.reduce((sum, item) => sum + item.totalPrice, 0);
   const gstAmount = subtotal * formulas.gstRate;
   const total = subtotal + gstAmount;
@@ -624,7 +666,21 @@ const QuoteBuilder: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className={`min-h-screen ${showSidebar ? (sidebarExpanded ? 'lg:pr-96 pr-0' : 'lg:pr-16 pr-0') : ''} transition-all duration-300`}>
+      {/* Quote Preview Sidebar */}
+      <QuotePreviewSidebar
+        selectedItems={selectedItems}
+        total={total}
+        isExpanded={sidebarExpanded}
+        isVisible={showSidebar}
+        onToggle={toggleSidebar}
+        onRemoveItem={removeItemById}
+        onQuantityChange={updateQuantityById}
+        gstRate={formulas.gstRate}
+        materialMarkup={formulas.materialMarkup}
+      />
+
+      <div className="space-y-6 p-4">
       {/* Step Progress Indicator */}
       <div className="sticky top-0 z-10 bg-white shadow-sm">
         <StepIndicator
@@ -1116,6 +1172,7 @@ const QuoteBuilder: React.FC = () => {
         onClose={() => setPreviewBundle(null)}
         onAddBundle={addBundleToQuote}
       />
+      </div>
     </div>
   );
 };
