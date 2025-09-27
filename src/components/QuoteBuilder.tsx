@@ -244,10 +244,24 @@ const QuoteBuilder: React.FC = () => {
     localStorage.setItem('fire-quotes-clients', JSON.stringify(updatedClients));
   };
 
-  const fillClientForm = (client: ClientInfo) => {
-    setClientInfo(client);
+  const fillClientForm = (client: ClientInfo & { id?: string; lastUsed?: Date; useCount?: number }) => {
+    // Extract only ClientInfo properties, excluding tracking metadata
+    const clientInfoOnly: ClientInfo = {
+      name: client.name || '',
+      abn: client.abn || '',
+      address: client.address || '',
+      suburb: client.suburb || '',
+      state: client.state || 'NSW',
+      postcode: client.postcode || '',
+      contactPerson: client.contactPerson || '',
+      email: client.email || '',
+      phone: client.phone || ''
+    };
+
+    console.log('Filling client form with:', clientInfoOnly); // Debug log
+    setClientInfo(clientInfoOnly);
     setShowClientSuggestions(false);
-    saveClient(client); // Update use count and last used
+    saveClient(clientInfoOnly); // Update use count and last used
   };
 
   const getClientSuggestions = (searchTerm: string) => {
